@@ -1,6 +1,6 @@
 OC6,7 Version development finished.
 Further features will be for OC8 only (Except some want them)
-This build was tested with OC8.0.0 master of 15.02.2015
+This build was tested with OC8.1 master of 11.08.2015
 
 --------------------------------------------------------------
 
