@@ -1,0 +1,25 @@
+#workin2gether p {
+	float: left;
+	padding-top: 0.8em;
+	padding-left: 1.2em;
+}
+
+#workin2gether img  {
+	float: left;
+	width: 48px;
+	height: 48px;
+	background: transparent url('apps/files_w2g/img/pattern.png');
+	border: 1px solid #D8D8D8;
+	padding: 5px;
+}
+a.action.locked{
+display:none !important;
+}
+
+a.name.statelock a.action{
+color:#eee;
+opacity:1 !important;
+}
+a.name.statelock a.action:hover, a.name.statelock span.extension{
+color:#fff;
+}

@@ -1,0 +1,17 @@
+
+a.action.locked{ display:none !important; }
+
+a.action-getstate_file.locked, a.action-getstate_dir.locked{ display:inline !important; }
+
+a.statelock a.action[data-action!=getstate_dir&&data-action!=getstate_file]{
+pointer-events:none;
+}
+td.statelock:focus{pointer-events:none;}
+
+a.action-getstate_file, a.action-getstate_dir{ cursor:pointer !important;}
+
+a.name.statelock a.action{ color:#eee; opacity:1 !important; }
+
+a.name.statelock a.action:hover, a.name.statelock span.extension{ color:#fff; }
+
+.ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled{ opacity:1.0;}

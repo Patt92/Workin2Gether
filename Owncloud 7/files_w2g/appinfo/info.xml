@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<info>
+	<id>files_w2g</id>
+	<name>Workin2gether</name>
+	<description>
+	Pseudo multiaccess-management feature for Owncloud.
+	You can lock files and disable the fileactions, leaving only the fileaction of unlocking a file.
+	Please leave your feedback and rate this app, if you like it!
+	</description>
+	<licence>AGPL</licence>
+	<author>Patrick Hoffmann</author>
+	<version>0.7.2.1b</version>
+	<require>6.00</require>
+</info>

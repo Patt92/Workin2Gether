@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<info>
+	<id>files_w2g</id>
+	<name>Workin2gether</name>
+	<description>Pseudo multiaccess-management feature for Owncloud. You can lock files and disable the fileactions, leaving only the fileaction of unlocking a file.
+	For example, you are trying to edit a calculation table. You can download the file, lock it and start editing the file on your computer. Every person, you have shared the file with,
+	will see that this file is currently locked, so others will leave the file alone. 
+	This feature is webinterface only.</description>
+	<licence>AGPL</licence>
+	<author>Patrick Hoffmann</author>
+	<version>0.6b</version>
+	<require>6.00</require>
+</info>
