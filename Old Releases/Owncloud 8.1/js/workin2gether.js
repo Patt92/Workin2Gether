@@ -1,14 +1,6 @@
 var color = '008887';
 var fontcolor = 'ffffff';
 
-function getAllProperties(obj) {
-  var properties = '';
-  for (property in obj) {
-    properties += '\n' + property;
-  }
-  alert('Properties of object:' + properties);
-}
-
 $(document).ready(function(){
 
 	//The default text, if no translation is available
@@ -20,18 +12,22 @@ $(document).ready(function(){
     if (typeof FileActions !== 'undefined' && $('#dir').length>0) {
 		        
         //Initiate the FileAction for file
-		OCA.Files.fileActions.registerAction({
-			name:'getstate_w2g',
-			displayName: t('files_w2g',text),
-			mime: 'all',
-			permissions: OC.PERMISSION_ALL,
-			type: OCA.Files.FileActions.TYPE_INLINE,
-			icon: function(){ return OC.imagePath('files_w2g','lock.png')},
-			actionHandler: function(filename,context)
-			{
-				getState(context.$file.attr('data-id'),filename,context.$file.attr('data-share-owner'),"false");
-			} 
-		});
+		OCA.Files.fileActions.register(
+			'file',
+			'getstate_file',
+			OC.PERMISSION_UPDATE,
+			function(){ return OC.imagePath('files_w2g','lock.png') },
+			function(filename,context) { getState(context.$file.attr('data-id'),filename,context.$file.attr('data-share-owner'),"false") }, t('files_w2g',text)
+		);
+            
+		//Initiate the FileAction for dir
+        OCA.Files.fileActions.register(
+			'dir',
+			'getstate_dir',
+			OC.PERMISSION_UPDATE,
+			function(){ return OC.imagePath('files_w2g','lock.png') },
+			function(filename,context) { getState(context.$file.attr('data-id'),filename,context.$file.attr('data-share-owner'),"false") }, t('files_w2g',text)
+		);
 		
 		//Walk through all files in the active Filelist
 		$('#content').delegate('#fileList', 'fileActionsReady',function(ev){
@@ -69,9 +65,9 @@ $(document).ready(function(){
 	var cssrules =  $("<style type='text/css'> </style>").appendTo("head");
 	cssrules.append(".statelock{ background-color:#"+color+";color:#"+fontcolor+" !important;}"+
 	".statelock span.modified{color:#"+fontcolor+" !important;}"+
-	"a.active{color:#"+fontcolor+" !important;display:inline !important;opacity:1.0 !important;}"+
-	"a.active:hover{color:#fff !important;}"+
-	"a.namelock,a.namelock span.extension {color:#"+fontcolor+";opacity:1.0!important;}");	
+	"a.action-getstate_file.locked,a.action-getstate_dir.locked{color:#"+fontcolor+" !important;}"+
+	"a.action-getstate_file.locked:hover,a.action-getstate_dir.locked:hover{color:#fff !important;}"+
+	"a.namelock,a.namelock span.extension {color:#"+fontcolor+";}");	
 });
 
 //Switch the Lockstate
@@ -81,14 +77,12 @@ function toggle_control(filename)
 	$('#fileList tr').each(function() {
 		var $tr = $(this);
 		var $_tr = $tr.html().replace(/^\s+|\s+$/g, '').replace('<span class="extension">','').split('</span>').join('');
-		var actionname = 'getstate_w2g';
+
 		if($_tr.indexOf(filename)!=-1)
 		{
 		    if($_tr.indexOf(lockedtext)==-1 && $_tr.indexOf(lockstate)==-1)
 		    {		//unlock
-					$tr.find('a.action[data-action!='+actionname+']').removeClass('locked');
-					$tr.find('a.action[data-action!='+actionname+']').addClass('permanent');
-					$tr.find('a.action[data-action='+actionname+']').removeClass('active');
+					$tr.find('a.action[data-action!='+text+']').removeClass('locked');
 					$tr.find('a.namelock').addClass('name').removeClass('namelock');
 					$tr.find('td.filesize').removeClass('statelock');
 					$tr.find('td.date').removeClass('statelock');
@@ -97,9 +91,9 @@ function toggle_control(filename)
 			}
 			else if($_tr.indexOf(lockedtext)!=-1||$_tr.indexOf(lockstate)!=-1)
 			{		//lock	
-					$tr.find('a.permanent[data-action!='+actionname+']').removeClass('permanent');
-					$tr.find('a.action[data-action='+actionname+']').addClass('active');
-					$tr.find('a.action[data-action!='+actionname+']:not([class*=favorite])').addClass('locked');
+					$tr.find('a.action[data-action!='+text+'][data-action!=favorite]').addClass('locked');
+					//$tr.find('a.action').not("[data-action=='+text+']").addClass('locked');
+					
 					$tr.find('a.name').addClass('namelock').removeClass('name');
 					$tr.find('td.filesize').addClass('statelock');
 					$tr.find('td.date').addClass('statelock');
@@ -110,9 +104,9 @@ function toggle_control(filename)
 }
 
 //Get the current state
-function getState(_id, _filename, _owner, _safe)
+function getState( _id, _filename, _owner, _safe)
 {
-        oc_dir = $('#dir').val();
+    oc_dir = $('#dir').val();
 	_filename = _filename.replace(/ /g, "%20");
 	oc_path = oc_dir +'/'+_filename;
 	
@@ -122,6 +116,7 @@ function getState(_id, _filename, _owner, _safe)
         data: { path: oc_path, safe: _safe, owner: _owner, id: _id},
         success: function(data){postmode(_filename,data)},
     });
+	
 }
 
 //Push the status
@@ -131,11 +126,17 @@ function postmode(filename,data)
 
 		var html = '<img class="svg" src="'+OC.imagePath('files_w2g','lock.png')+'"></img> '+'<span>'+data+'</span>';
 
-		//Push the status
-		$('tr').filterAttr('data-file',filename).find('td.filename').find('a.name').find('span.fileactions').find("a.action").filterAttr('data-action','getstate_w2g').html(html);
+		//Push the status text to the file
+		$('tr').filterAttr('data-file',filename).find('td.filename').find('a.name').find('span.fileactions').find("a.action").filterAttr('data-action','getstate_file').html(html);
+		
+		//Push the status text to the dir
+		$('tr').filterAttr('data-file',filename).find('td.filename').find('a.name').find('span.fileactions').find("a.action").filterAttr('data-action','getstate_dir').html(html);
 
-		//Push the status text to the locked mime
-		$('tr').filterAttr('data-file',filename).find('td.filename').find('a.namelock').find('span.fileactions').find("a.action").filterAttr('data-action','getstate_w2g').html(html);
+		//Push the status text to the locked file
+		$('tr').filterAttr('data-file',filename).find('td.filename').find('a.namelock').find('span.fileactions').find("a.action").filterAttr('data-action','getstate_file').html(html);
+		
+		//Push the status text to the locked dir
+		$('tr').filterAttr('data-file',filename).find('td.filename').find('a.namelock').find('span.fileactions').find("a.action").filterAttr('data-action','getstate_dir').html(html);
 		
 		if(data!=t('files_w2g','No permission'))
 			toggle_control(filename);
