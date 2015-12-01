@@ -69,8 +69,8 @@ $(document).ready(function(){
 	var cssrules =  $("<style type='text/css'> </style>").appendTo("head");
 	cssrules.append(".statelock{ background-color:#"+color+";color:#"+fontcolor+" !important;}"+
 	".statelock span.modified{color:#"+fontcolor+" !important;}"+
-	"a.active{color:#"+fontcolor+" !important;display:inline !important;opacity:1.0 !important;}"+
-	"a.active:hover{color:#fff !important;}"+
+	"a.w2g_active{color:#"+fontcolor+" !important;display:inline !important;opacity:1.0 !important;}"+
+	"a.w2g_active:hover{color:#fff !important;}"+
 	"a.namelock,a.namelock span.extension {color:#"+fontcolor+";opacity:1.0!important;}");	
 });
 
@@ -98,7 +98,7 @@ function toggle_control(filename)
 			else if($_tr.indexOf(lockedtext)!=-1||$_tr.indexOf(lockstate)!=-1)
 			{		//lock	
 					$tr.find('a.permanent[data-action!='+actionname+']').removeClass('permanent');
-					$tr.find('a.action[data-action='+actionname+']').addClass('active');
+					$tr.find('a.action[data-action='+actionname+']').addClass('w2g_active');
 					$tr.find('a.action[data-action!='+actionname+']:not([class*=favorite])').addClass('locked');
 					$tr.find('a.name').addClass('namelock').removeClass('name');
 					$tr.find('td.filesize').addClass('statelock');
