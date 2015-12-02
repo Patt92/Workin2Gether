@@ -88,7 +88,7 @@ function toggle_control(filename)
 		    {		//unlock
 					$tr.find('a.action[data-action!='+actionname+']').removeClass('locked');
 					$tr.find('a.action[data-action!='+actionname+']').addClass('permanent');
-					$tr.find('a.action[data-action='+actionname+']').removeClass('active');
+					$tr.find('a.action[data-action='+actionname+']').removeClass('w2g_active');
 					$tr.find('a.namelock').addClass('name').removeClass('namelock');
 					$tr.find('td.filesize').removeClass('statelock');
 					$tr.find('td.date').removeClass('statelock');
