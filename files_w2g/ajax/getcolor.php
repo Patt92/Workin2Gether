@@ -1,5 +1,8 @@
 <?php
 
+\OCP\JSON::checkLoggedIn();
+\OCP\JSON::callCheck();
+
 $query = @OCP\DB::prepare("SELECT * FROM *PREFIX*appconfig where configkey=? and appid='files_w2g' LIMIT 1");
 $result = @$query->execute(array($_POST['type']))->fetchAll();
 

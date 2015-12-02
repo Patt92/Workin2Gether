@@ -2,6 +2,9 @@
 
 namespace OCA\files_w2g;
 
+\OCP\JSON::checkLoggedIn();
+\OCP\JSON::callCheck();
+
 $mode = "";
 $value = "";
 

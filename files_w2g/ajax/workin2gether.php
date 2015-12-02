@@ -9,6 +9,7 @@ $l = \OCP\Util::getL10N('files_w2g');
 //Requirements check
 \OCP\JSON::checkLoggedIn();
 \OCP\JSON::checkAppEnabled('files_w2g');
+\OCP\JSON::callCheck();
 
 ////////////////////////////////////////////////////
 ////	variables for lock management		////
