@@ -1,14 +1,6 @@
 var color = '008887';
 var fontcolor = 'ffffff';
 
-function getAllProperties(obj) {
-  var properties = '';
-  for (property in obj) {
-    properties += '\n' + property;
-  }
-  alert('Properties of object:' + properties);
-}
-
 $(document).ready(function(){
 
 	//The default text, if no translation is available
