@@ -9,9 +9,9 @@ pointer-events:none;
 a.namelock
 {
 line-height: 50px;
-padding: 0 !important;
+padding: 0;
 }
-a.namelock .nametext{position:absolute !important;}
+a.namelock .nametext{position:absolute !important;left:105px !important;}
 
 td.statelock:focus{pointer-events:none;}
 
@@ -22,18 +22,3 @@ a.name.statelock a.action{ color:#eee; opacity:1 !important; }
 a.name.statelock a.action:hover, a.name.statelock span.extension{ color:#fff; }
 
 .ui-state-disabled, .ui-widget-content .ui-state-disabled, .ui-widget-header .ui-state-disabled{ opacity:1.0;}
-
-table td.filename a.namelock {
-    position: relative;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    display: block;
-    height: 50px;
-    line-height: 50px;
-    padding: 0;
-}
-.has-favorites #fileList td.filename a.namelock {
-        left: 50px;
-        margin-right: 50px;
-}
-

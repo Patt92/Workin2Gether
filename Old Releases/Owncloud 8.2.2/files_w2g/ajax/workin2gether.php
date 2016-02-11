@@ -12,11 +12,11 @@ $l = \OCP\Util::getL10N('files_w2g');
 \OCP\JSON::callCheck();
 
 ////////////////////////////////////////////////////
-////	variables for lock management			////
+////	variables for lock management		////
 /**/	$path = stripslashes($_POST['path']) ; 	/**/
-/**/	$safe = null;							/**/
-/**/	$owner = null;							/**/
-/**/	$id = null;								/**/
+/**/	$safe = null;				/**/
+/**/	$owner = null;				/**/
+/**/	$id = null;				/**/
 ////////////////////////////////////////////////////
 
 //Naming = Showing the name, who locked the File
