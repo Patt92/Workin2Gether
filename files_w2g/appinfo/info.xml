@@ -16,6 +16,6 @@
 	<ocsid>164016</ocsid>
 	<dependencies>
         <database>mysql</database>
-		<owncloud min-version="8.0" max-version="8.2.2" />
+	<owncloud min-version="8.0" max-version="8.2.2" />
     </dependencies>
 </info>

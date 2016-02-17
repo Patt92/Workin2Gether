@@ -105,13 +105,13 @@ function toggle_control(filename)
 function getState(_id, _filename, _owner, _safe)
 {
         oc_dir = $('#dir').val();
-	_filename = _filename.replace(/ /g, "%20");
+	_filename = escapeHTML(_filename);
 	oc_path = oc_dir +'/'+_filename;
 	
 	$.ajax({
         url: OC.filePath('files_w2g','ajax','workin2gether.php'),
         type: "post",
-        data: { path: oc_path, safe: _safe, owner: _owner, id: _id},
+        data: { path: escapeHTML(oc_path), safe: _safe, owner: _owner, id: _id},
         success: function(data){postmode(_filename,data)},
     });
 }
@@ -121,7 +121,7 @@ function postmode(filename,data)
 {
 		filename = filename.replace(/%20/g,' ');
 
-		var html = '<img class="svg" src="'+OC.imagePath('files_w2g','lock.png')+'"></img> '+'<span>'+data+'</span>';
+		var html = '<img class="svg" src="'+OC.imagePath('files_w2g','lock.png')+'"></img> '+'<span>'+escapeHTML(data)+'</span>';
 
 		//Push the status
 		$('tr').filterAttr('data-file',filename).find('td.filename').find('a.name').find('span.fileactions').find("a.action").filterAttr('data-action','getstate_w2g').html(html);

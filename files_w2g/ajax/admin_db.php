@@ -2,6 +2,7 @@
 
 namespace OCA\files_w2g;
 
+\OCP\JSON::checkAdminUser();
 \OCP\JSON::checkLoggedIn();
 \OCP\JSON::callCheck();
 
