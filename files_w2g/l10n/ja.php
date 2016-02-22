@@ -11,8 +11,8 @@ $TRANSLATIONS = array(
 "Font color" => "フォント色",
 "Save" => "保存",
 "There are no locked files at the moment" => "現在ロックされているファイルはありません",
-"Locked files" => "このファイルをロック解除",
-"Unlock this file" => "ロック中のファイル",
+"Locked files" => "ロック中のファイル",
+"Unlock this file" => "選択したファイルをロック解除",
 "Unlock all files" => "全てのファイルをロック解除",
-"by" => "による",
+"by" => "名前："
 );
