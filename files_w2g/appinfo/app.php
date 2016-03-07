@@ -29,12 +29,10 @@ class app{
 
 if (\OCP\App::isEnabled(app::name)) {
 
-	//Check if DB exist
-        $db_exist = \OCP\DB::prepare("SHOW TABLES LIKE '*PREFIX*".app::table."'")->execute()->fetchAll();
-
-        if($db_exist==null){
-                @$db_exist = \OCP\DB::prepare("CREATE table *PREFIX*" . app::table . "(name varchar(255) PRIMARY KEY,created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,locked_by varchar(255)) " . app::charset);
-                @$db_exist->execute();
+	//Check if DB exist, otherwise create it
+        if(!\OC::$server->getDatabaseConnection()->tableExists( app::table )){
+                $db_exist = \OCP\DB::prepare("CREATE table *PREFIX*" . app::table . "(name varchar(255) PRIMARY KEY,created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,locked_by varchar(255)) " . app::charset);
+                $db_exist->execute();
         }
 
 	app::launch();
