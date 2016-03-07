@@ -1,6 +1,6 @@
 OC6,7 Version development finished.
 Further features will be for OC8 only (Except some want them)
-This build was tested with OC8.1 master of 11.08.2015
+This build was tested with OC8.2.2
 
 --------------------------------------------------------------
 
@@ -9,7 +9,7 @@ support: patrick@gen7.de
 Installation 
 ------------
 
-- copy the files_w2g (from the "Owncloud X" folder, x is your version) to your apps folder inside your Owncloud installation.
+- Install the app via appstore or place it manually to the apps folder inside your owncloud instance
 
 - That's all, database table setup and other stuff will be done automatically
 
