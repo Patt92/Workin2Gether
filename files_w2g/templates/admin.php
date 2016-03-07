@@ -34,7 +34,7 @@ if($exist!=null)
 
 	<?php
 	p($l->t("Here you can set the colors for the locked files."));
-	echo $naming;
+
 	echo '
 	<br><br>
 	<u>'.$l->t("Background color").':</u><br>
