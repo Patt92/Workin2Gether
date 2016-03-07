@@ -18,8 +18,7 @@ $extended = "0";
 db_fetcher( $extended , "extended" );
 
 //Locked files
-$exist = \OCP\DB::prepare("SHOW TABLES LIKE '*PREFIX*".app::table."'")->execute()->fetchAll();
-if($exist!=null)
+if(\OC::$server->getDatabaseConnection()->tableExists( app::table ))
 	$result = \OCP\DB::prepare("SELECT * FROM *PREFIX*".app::table)->execute()->fetchAll();
 
 //----------------------------------------------------------------------------------------------------------------------------
