@@ -20,7 +20,7 @@ $configvalue = \OC::$server->getConfig()->getAppValue( 'files_w2g' , $mode , '[u
 
 if( $configvalue == '[unset]' )//Value already set?
 {
-	$query = \OCP\DB::prepare("INSERT INTO *PREFIX*appconfig(appid,configkey,configvalue) value('files_w2g',?,?)");
+	$query = \OCP\DB::prepare("INSERT INTO *PREFIX*appconfig(appid,configkey,configvalue) VALUES('files_w2g',?,?)");
 	$result = $query->execute(array($mode,$value));
 	echo $l->t($mode)." ".$l->t("has been set!");
 }
