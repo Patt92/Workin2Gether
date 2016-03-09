@@ -1,6 +1,6 @@
 <?php
 
-\OCP\JSON::checkLoggedIn();
+//\OCP\JSON::checkLoggedIn(); Fix 401 unauthorized error. This script may be executed without login!
 \OCP\JSON::callCheck();
 
 $query = @OCP\DB::prepare("SELECT * FROM *PREFIX*appconfig where configkey=? and appid='files_w2g' LIMIT 1");
