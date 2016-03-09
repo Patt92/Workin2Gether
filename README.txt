@@ -1,6 +1,6 @@
 OC6,7 Version development finished.
-Further features will be for OC8 only (Except some want them)
-This build was tested with OC8.2.2
+Further features will be for OC9 only
+This build was tested with OC8.2.2+9.0.0
 
 --------------------------------------------------------------
 
