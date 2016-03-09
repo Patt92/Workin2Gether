@@ -105,7 +105,6 @@ function toggle_control(filename)
 function getState(_id, _filename, _owner, _safe)
 {
         oc_dir = $('#dir').val();
-	_filename = escapeHTML(_filename);
 	oc_path = oc_dir +'/'+_filename;
 	
 	$.ajax({
