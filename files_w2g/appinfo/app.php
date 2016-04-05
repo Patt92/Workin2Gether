@@ -14,13 +14,14 @@ class app{
 
 	public static function launch()
 	{
+		if(\OC_User::isLoggedIn())
+		{
+				\OCP\Util::addScript( self::name, 'workin2gether');
 
-		\OCP\Util::addScript( self::name, 'workin2gether');
+				\OCP\Util::addstyle( self::name, 'styles');
 
-		\OCP\Util::addstyle( self::name, 'styles');
-
-		\OCP\App::registerAdmin(self::name, 'admin');
-
+				\OCP\App::registerAdmin(self::name, 'admin');
+		}
 	}
 
 }
