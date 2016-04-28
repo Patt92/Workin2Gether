@@ -15,6 +15,6 @@
 	</types>
 	<ocsid>164016</ocsid>
 	<dependencies>
-	<owncloud min-version="8.0" max-version="9.0.0" />
+	<owncloud min-version="8.0" max-version="9.0.1" />
     </dependencies>
 </info>

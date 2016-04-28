@@ -14,7 +14,7 @@ class app{
 
 	public static function launch()
 	{
-		if(\OC_User::isLoggedIn())
+		if(\OC_User::getUser()!=false)
 		{
 				\OCP\Util::addScript( self::name, 'workin2gether');
 
