@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<info>
+<info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
 	<id>files_w2g</id>
 	<name>Workin2gether</name>
 	<summary>Visual locking of files and folders to contribute to a better collaboration</summary>
@@ -9,13 +10,14 @@
 	Please leave your feedback and rate this app, if you like it!
 	!]]></description>
 	<licence>AGPL</licence>
-	<author>Patrick Hoffmann</author>
-	<types>
-		<filesystem/>
-	</types>
+	<author mail="patrick@gen7.de">Patrick Hoffmann</author>
+	<version>0.9.0.1</version>
+	<namespace>files_w2g</namespace>
+	<category>social</category>
 	<ocsid>164016</ocsid>
 	<dependencies>
 	<owncloud min-version="8.0" max-version="9.9.0" />
 	<nextcloud min-version="9" max-version="11.9" />
     </dependencies>
+	<repository type="git">https://github.com/Patt92/Workin2Gether.git</repository>
 </info>
