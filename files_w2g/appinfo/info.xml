@@ -4,11 +4,10 @@
 	<name>Workin2gether</name>
 	<summary>Visual locking of files and folders to contribute to a better collaboration</summary>
 	<description>
-	Pseudo multiaccess-management feature for Owncloud.
+	<![CDATA[Pseudo multiaccess-management feature for Owncloud.
 	You can lock files and disable the fileactions, leaving only the fileaction of unlocking a file.
 	Please leave your feedback and rate this app, if you like it!
-	</description>
-	<default_enable/>
+	!]]></description>
 	<licence>AGPL</licence>
 	<author>Patrick Hoffmann</author>
 	<types>
