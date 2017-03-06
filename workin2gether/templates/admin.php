@@ -1,6 +1,6 @@
 <?php
 
-namespace OCA\files_w2g;
+namespace OCA\workin2gether;
 
 //-------------------------------------------- Get colors from database ------------------------------------------------------
 
@@ -88,7 +88,7 @@ if(\OC::$server->getDatabaseConnection()->tableExists( app::table ))
 <?php
 
 function db_fetcher( &$configkey, $configtype ){
-        $type = \OCP\DB::prepare("SELECT * FROM *PREFIX*appconfig where configkey=? and appid='files_w2g' LIMIT 1")->execute(array($configtype))->fetchAll();
+        $type = \OCP\DB::prepare("SELECT * FROM *PREFIX*appconfig where configkey=? and appid='workin2gether' LIMIT 1")->execute(array($configtype))->fetchAll();
 
         if (count($type) >= 1)
                 $configkey = $type[0]['configvalue'];

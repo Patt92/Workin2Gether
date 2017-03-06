@@ -1,6 +1,6 @@
 <?php
 
-namespace OCA\files_w2g;
+namespace OCA\workin2gether;
 
 \OCP\User::checkAdminUser();
 

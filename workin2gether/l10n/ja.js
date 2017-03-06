@@ -1,5 +1,5 @@
 OC.L10N.register(
-    "files_w2g",
+    "workin2gether",
     {
 		"File not locked" : "ファイルロック無し",
 		"File is locked" : "ファイルロック中",

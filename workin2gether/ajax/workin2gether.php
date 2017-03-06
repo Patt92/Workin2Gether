@@ -1,14 +1,14 @@
 <?php
 
-namespace OCA\files_w2g;
+namespace OCA\workin2gether;
 
 //Init translations
-\OCP\Util::addTranslations('files_w2g');
-$l = \OCP\Util::getL10N('files_w2g');
+\OCP\Util::addTranslations('workin2gether');
+$l = \OCP\Util::getL10N('workin2gether');
 
 //Requirements check
 \OCP\JSON::checkLoggedIn();
-\OCP\JSON::checkAppEnabled('files_w2g');
+\OCP\JSON::checkAppEnabled('workin2gether');
 \OCP\JSON::callCheck();
 
 ////////////////////////////////////////////////////
@@ -116,7 +116,7 @@ function cleanPath($path){
 }
 
 function db_fetcher( &$configkey, $configtype ){
-	$type = \OCP\DB::prepare("SELECT * FROM *PREFIX*appconfig where configkey=? and appid='files_w2g' LIMIT 1")->execute(array($configtype))->fetchAll();
+	$type = \OCP\DB::prepare("SELECT * FROM *PREFIX*appconfig where configkey=? and appid='workin2gether' LIMIT 1")->execute(array($configtype))->fetchAll();
 
 	if (count($type) >= 1)
         	$configkey = $type[0]['configvalue'];

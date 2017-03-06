@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
-	<id>files_w2g</id>
+	<id>workin2gether</id>
 	<name>Workin2gether</name>
 	<summary>Visual locking of files and folders to contribute to a better collaboration</summary>
 	<description>
 	<![CDATA[Pseudo multiaccess-management feature for Owncloud.
 	You can lock files and disable the fileactions, leaving only the fileaction of unlocking a file.
 	Please leave your feedback and rate this app, if you like it!
-	!]]></description>
+	]]></description>
 	<licence>AGPL</licence>
-	<author mail="patrick@gen7.de">Patrick Hoffmann</author>
-	<version>0.9.1</version>
-	<namespace>files_w2g</namespace>
+	<author>Patrick Hoffmann</author>
+	<version>0.9.1.1</version>
+	<namespace>workin2gether</namespace>
 	<category>social</category>
 	<ocsid>164016</ocsid>
 	<dependencies>

@@ -1,14 +1,14 @@
 <?php
 
-namespace OCA\files_w2g;
+namespace OCA\workin2gether;
 
-\OCP\Util::addTranslations('files_w2g');
+\OCP\Util::addTranslations('workin2gether');
 
-$l = \OCP\Util::getL10N('files_w2g');
+$l = \OCP\Util::getL10N('workin2gether');
 
 class app{
 
-	const name = 'files_w2g';
+	const name = 'workin2gether';
 
 	const table = 'locks_w2g';
 

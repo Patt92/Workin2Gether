@@ -5,20 +5,20 @@ $(document).ready(function(){
 
 	//The default text, if no translation is available
 	text = "filelock";
-	//t('files_w2g','filelock');
-	lockedtext = t('files_w2g','File is locked');
-	lockstate = t('files_w2g','Status: locked');
+	//t('workin2gether','filelock');
+	lockedtext = t('workin2gether','File is locked');
+	lockstate = t('workin2gether','Status: locked');
 	
     if (typeof FileActions !== 'undefined' && $('#dir').length>0) {
 		        
         //Initiate the FileAction for file
 		OCA.Files.fileActions.registerAction({
 			name:'getstate_w2g',
-			displayName: t('files_w2g',text),
+			displayName: t('workin2gether',text),
 			mime: 'all',
 			permissions: OC.PERMISSION_ALL,
 			type: OCA.Files.FileActions.TYPE_INLINE,
-			icon: function(){ return OC.imagePath('files_w2g','lock.png')},
+			icon: function(){ return OC.imagePath('workin2gether','lock.png')},
 			actionHandler: function(filename,context)
 			{
 				getState(context.$file.attr('data-id'),filename,context.$file.attr('data-share-owner'),"false");
@@ -41,7 +41,7 @@ $(document).ready(function(){
 	
 	//Get the Background-color from the database
 	$.ajax({
-	url: OC.filePath('files_w2g','ajax','getcolor.php'),
+	url: OC.filePath('workin2gether','ajax','getcolor.php'),
 	type: "post",
 	data: { type: 'color'},
 	async: false,
@@ -50,7 +50,7 @@ $(document).ready(function(){
 	
 	//Get the Fontcolor from the database
 	$.ajax({
-	url: OC.filePath('files_w2g','ajax','getcolor.php'),
+	url: OC.filePath('workin2gether','ajax','getcolor.php'),
 	type: "post",
 	data: { type: 'fontcolor'},
 	async: false,
@@ -108,7 +108,7 @@ function getState(_id, _filename, _owner, _safe)
 	oc_path = oc_dir +'/'+_filename;
 	
 	$.ajax({
-        url: OC.filePath('files_w2g','ajax','workin2gether.php'),
+        url: OC.filePath('workin2gether','ajax','workin2gether.php'),
         type: "post",
         data: { path: escapeHTML(oc_path), safe: _safe, owner: _owner, id: _id},
         success: function(data){postmode(_filename,data)},
@@ -120,7 +120,7 @@ function postmode(filename,data)
 {
 		filename = filename.replace(/%20/g,' ');
 
-		var html = '<img class="svg" src="'+OC.imagePath('files_w2g','lock.png')+'"></img> '+'<span>'+escapeHTML(data)+'</span>';
+		var html = '<img class="svg" src="'+OC.imagePath('workin2gether','lock.png')+'"></img> '+'<span>'+escapeHTML(data)+'</span>';
 
 		//Push the status
 		$('tr').filterAttr('data-file',filename).find('td.filename').find('a.name').find('span.fileactions').find("a.action").filterAttr('data-action','getstate_w2g').html(html);
@@ -128,6 +128,6 @@ function postmode(filename,data)
 		//Push the status text to the locked mime
 		$('tr').filterAttr('data-file',filename).find('td.filename').find('a.namelock').find('span.fileactions').find("a.action").filterAttr('data-action','getstate_w2g').html(html);
 		
-		if(data!=t('files_w2g','No permission'))
+		if(data!=t('workin2gether','No permission'))
 			toggle_control(filename);
 }

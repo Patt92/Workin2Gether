@@ -1,5 +1,5 @@
 OC.L10N.register(
-    "files_w2g",
+    "workin2gether",
     {
 		"File not locked" : "Fichier non verrouillé ",
 		"File is locked" : " Fichier verrouillé ",
@@ -15,6 +15,14 @@ OC.L10N.register(
 		"Locked files" : " Fichiers verrouillés",
 		"Unlock this file" : " Déverrouiller ce fichier ",
 		"Unlock all files" : " Déverrouiller tous les fichiers",
-		"by" : "par"
+		"by" : "par",
+		"'Locked by' suffix" : "'verrouillé par'-suffixe",
+		"username" : "nom d'utilisateur",
+		"Shows the real username i.e. admin, or LDAP UUID" : "Affiche le vrai nom d'utilisateur, par exemple admin ou un UUID",
+		"display name" : "nom d'affichage",
+		"Shows the full displayed name, i.e. John Doe" : "Affiche le nom d'affichage, par exemple Jean Dupont",
+		"Suffix change has been saved" : "le changement de suffixe a été enregistré",
+		"Old file locks won't be affected by this" : "les anciens fichiers ne seront pas affectés par cette"
+		
 },
 "nplurals=2; plural=(n != 1);");
