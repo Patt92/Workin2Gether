@@ -4,10 +4,10 @@ var fontcolor = 'ffffff';
 $(document).ready(function(){
 
 	//The default text, if no translation is available
-	text = "filelock";
+	text = "";
 	//t('workin2gether','filelock');
-	lockedtext = t('workin2gether','File is locked');
-	lockstate = t('workin2gether','Status: locked');
+	lockedtext = t('workin2gether','Locked');
+	lockstate = t('workin2gether','Locked');
 	
     if (typeof FileActions !== 'undefined' && $('#dir').length>0) {
 		        
@@ -120,12 +120,10 @@ function postmode(filename,data)
 {
 		filename = filename.replace(/%20/g,' ');
 
-		var html = '<img class="svg" src="'+OC.imagePath('workin2gether','lock.png')+'"></img> '+'<span>'+escapeHTML(data)+'</span>';
+		var html = '<img class="svg" src="'+OC.imagePath('workin2gether','lock.png')+'"></img>'+'<span>'+escapeHTML(data)+'</span>';
 
-		//Push the status
 		$('tr').filterAttr('data-file',filename).find('td.filename').find('a.name').find('span.fileactions').find("a.action").filterAttr('data-action','getstate_w2g').html(html);
 
-		//Push the status text to the locked mime
 		$('tr').filterAttr('data-file',filename).find('td.filename').find('a.namelock').find('span.fileactions').find("a.action").filterAttr('data-action','getstate_w2g').html(html);
 		
 		if(data!=t('workin2gether','No permission'))

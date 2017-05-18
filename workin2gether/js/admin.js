@@ -28,10 +28,9 @@ $(document).ready(function(){
 			type: "post",
 			data: { mode: 'suffix', value: $("input:radio[name='suffix']:checked").attr('id')},
 			async: false,
-			success: function(data){$("#suffixupdated").fadeTo(0,1.0).css("display","inline-block").fadeTo(3000,0.0);},
+			success: function(data){},
 			});
 	});
-
 	
 	$('#clearall').click(function(){
 		$.ajax({

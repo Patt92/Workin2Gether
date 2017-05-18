@@ -2,8 +2,6 @@
 
 namespace OCA\workin2gether;
 
-//-------------------------------------------- Get colors from database ------------------------------------------------------
-
 //backcolor
 $value = "008887";
 db_fetcher( $value , "color" );
@@ -20,8 +18,6 @@ db_fetcher( $extended , "extended" );
 //Locked files
 if(\OC::$server->getDatabaseConnection()->tableExists( app::table ))
 	$result = \OCP\DB::prepare("SELECT * FROM *PREFIX*".app::table)->execute()->fetchAll();
-
-//----------------------------------------------------------------------------------------------------------------------------
 
 \OCP\Util::addscript(app::name, 'admin');
 \OCP\Util::addscript(app::name, 'jscolor');
@@ -50,7 +46,7 @@ if(\OC::$server->getDatabaseConnection()->tableExists( app::table ))
 	echo '<div id="lockfield"><u>'.$l->t("Locked files").':</u><br>
 		<select multiple="multiple" size="6" style="height:100px;" id="select_lock">';
 		for($i=1;$i<=count($result);$i++)
-			echo '<option value="'.$result[$i-1]['name'].'">'.rtrim(str_replace('$','/',$result[$i-1]['name']),'/').'</option>';
+			echo '<option value="'.$result[$i-1]['name'].'">'.rtrim($result[$i-1]['name'],'/').'</option>';
 		echo '</select><br><input id="clearthis" type="submit" value="'.$l->t("Unlock this file").'" name=clearthis"></input>
 		<input id="clearall" type="submit" value="'.$l->t("Unlock all files").'" name=clearall"></input></div>
 		';
@@ -72,15 +68,9 @@ if(\OC::$server->getDatabaseConnection()->tableExists( app::table ))
 	<p style="font-size:10px">('.$l->t("Old file locks won't be affected by this").')</p><br>
 	<div>
 		<p><input id="rule_username" type="radio" name="suffix" ';if($naming=="rule_username") echo 'checked="checked"'; echo '><label for="rule_username">'.$l->t("username").'</label><br><em>'.$l->t("Shows the real username i.e. admin, or LDAP UUID").'</em></input></p>
-		<p><input id="rule_displayname" type="radio" name="suffix" ';if($naming=="rule_displayname") echo 'checked="checked"'; echo '><label for="rule_username">'.$l->t("display name").'</label><br><em>'.$l->t("Shows the full displayed name, i.e. John Doe").'</em></input></p>
+		<p><input id="rule_displayname" type="radio" name="suffix" ';if($naming=="rule_displayname") echo 'checked="checked"'; echo '><label for="rule_displayname">'.$l->t("display name").'</label><br><em>'.$l->t("Shows the full displayed name, i.e. John Doe").'</em></input></p>
 	</div>
 	';
-
-	echo '<br>
-	<p id="suffixupdated" style="background-color:#27AE60;display:inline-block;opacity:0;color:#eee;padding:5px;border-radius:5px;">
-	'.$l->t("Suffix change has been saved").'
-	</p>
-	<br>';
 
 	?>
 </fieldset></div>

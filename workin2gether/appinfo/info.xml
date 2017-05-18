@@ -5,19 +5,18 @@
 	<name>Workin2gether</name>
 	<summary>Visual locking of files and folders to contribute to a better collaboration</summary>
 	<description>
-	<![CDATA[Pseudo multiaccess-management feature for Owncloud.
+	<![CDATA[Pseudo multiaccess-management feature for Owncloud/Nextcloud.
 	You can lock files and disable the fileactions, leaving only the fileaction of unlocking a file.
 	Please leave your feedback and rate this app, if you like it!
 	]]></description>
 	<licence>AGPL</licence>
 	<author>Patrick Hoffmann</author>
-	<version>0.9.1.1</version>
-	<namespace>workin2gether</namespace>
+	<version>0.9.3</version>
 	<category>social</category>
 	<ocsid>164016</ocsid>
+	<bugs>https://github.com/Patt92/Workin2Gether/issues</bugs>
 	<dependencies>
-	<owncloud min-version="8.0" max-version="9.9.0" />
-	<nextcloud min-version="9" max-version="11.9" />
-    </dependencies>
-	<repository type="git">https://github.com/Patt92/Workin2Gether.git</repository>
+		<owncloud min-version="8.0" max-version="9.9.0"/>
+		<nextcloud min-version="9" max-version="11.9"/>
+    	</dependencies>
 </info>

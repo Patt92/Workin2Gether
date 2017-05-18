@@ -1,10 +1,5 @@
 <?php
 $TRANSLATIONS = array(
-"File not locked" => "Datei nicht gesperrt",
-"File is locked" => "Datei ist gesperrt",
-"Status: locked" => "Status: gesperrt",
-"Status: not locked" => "Status: nicht gesperrt",
-"filelock" => "Dateisperre",
 "Manage multiaccess" => "Mehrfachzugriff konfigurieren",
 "Here you can set the colors for the locked files." => "Hier können Sie die Standard Hintergrundfarbe für gesperrte Dateien festlegen.",
 "Background color" => "Hintergrundfarbe",
@@ -26,5 +21,6 @@ $TRANSLATIONS = array(
 "Use the extended permission feature for managing locks" => "Erweiterte Berechtigungsfunktion verwenden",
 "This feature allows unlocking only by the owner of the lock" => "Mit dieser Funktion k&ouml;nnen gesperrte Dateien nur von den Besitzern der Sperre entfernt werden",
 "The upcoming release will add group based permissions" => "Das n&auml;chste Update beinhaltet gruppenbasierte Berechtigungen",
-"No permission" => "Keine Berechtigung"
+"No permission" => "Keine Berechtigung",
+"Locked" => "Gesperrt"
 );

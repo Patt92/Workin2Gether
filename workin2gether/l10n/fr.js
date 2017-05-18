@@ -22,7 +22,8 @@ OC.L10N.register(
 		"display name" : "nom d'affichage",
 		"Shows the full displayed name, i.e. John Doe" : "Affiche le nom d'affichage, par exemple Jean Dupont",
 		"Suffix change has been saved" : "le changement de suffixe a été enregistré",
-		"Old file locks won't be affected by this" : "les anciens fichiers ne seront pas affectés par cette"
-		
+		"Old file locks won't be affected by this" : "les anciens fichiers ne seront pas affectés par cette",
+		"Locked" : "Verrouillé",
+		"Permission management" : "Gestion d'autorisations"
 },
 "nplurals=2; plural=(n != 1);");

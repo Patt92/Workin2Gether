@@ -15,4 +15,6 @@ $TRANSLATIONS = array(
 "Unlock this file" => " Déverrouiller ce fichier ",
 "Unlock all files" => " Déverrouiller tous les fichiers",
 "by" => "par",
+"Locked" => "Verrouillé",
+"Permission Management" => "Gestion d'autorisations"
 );

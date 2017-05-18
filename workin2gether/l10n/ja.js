@@ -27,6 +27,7 @@ OC.L10N.register(
 		"Use the extended permission feature for managing locks" : "ロック管理を拡張する機能を使用する",
 		"This feature allows unlocking only by the owner of the lock" : "これはロックの解除をそのロックの所有者に限定する機能です",
 		"The upcoming release will add group based permissions" : "将来的には、グループ権限によるロック機能の解除も追加します",
-		"No permission" : "権限がありません"
+		"No permission" : "権限がありません",
+		"Locked" : "ロックされた"
 },
 "nplurals=2; plural=(n != 1);");
