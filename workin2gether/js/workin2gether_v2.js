@@ -67,6 +67,8 @@ $(document).ready(function(){
 //Switch the Lockstate
 function toggle_control(filename)
 {
+	$(".ignore-click").unbind("click");
+
 	//Walk through the Filelists
 	$('#fileList tr').each(function() {
 		var $tr = $(this);
