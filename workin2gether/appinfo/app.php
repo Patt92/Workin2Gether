@@ -16,7 +16,7 @@ class app{
 	{
 		if(\OC_User::getUser()!=false)
 		{
-				\OCP\Util::addScript( self::name, 'workin2gether');
+				\OCP\Util::addScript( self::name, 'workin2gether_v2');
 
 				\OCP\Util::addstyle( self::name, 'styles');
 

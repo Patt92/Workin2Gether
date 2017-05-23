@@ -11,12 +11,12 @@
 	]]></description>
 	<licence>AGPL</licence>
 	<author>Patrick Hoffmann</author>
-	<version>0.9.3</version>
+	<version>0.9.4</version>
 	<category>social</category>
 	<ocsid>164016</ocsid>
 	<bugs>https://github.com/Patt92/Workin2Gether/issues</bugs>
 	<dependencies>
 		<owncloud min-version="8.0" max-version="9.9.0"/>
-		<nextcloud min-version="9" max-version="11.9"/>
+		<nextcloud min-version="9" max-version="12.9"/>
     	</dependencies>
 </info>

@@ -52,7 +52,7 @@ if ($db_lock_state!=null) {
                 ShowUserName($lockedby_name);
 
 		if( extended_precheck( $extended, $lockedby_name ) != 0 ){
-			echo $l->t("No permission");
+			echo " ".$l->t("No permission");
 			return;
 		}
 

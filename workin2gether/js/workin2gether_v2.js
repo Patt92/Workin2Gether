@@ -3,13 +3,11 @@ var fontcolor = 'ffffff';
 
 $(document).ready(function(){
 
-	//The default text, if no translation is available
-	text = "";
-	//t('workin2gether','filelock');
-	lockedtext = t('workin2gether','Locked');
-	lockstate = t('workin2gether','Locked');
+   text = "";
+   lockedtext = t('workin2gether','Locked');
+   lockstate = t('workin2gether','Locked');
 	
-    if (typeof FileActions !== 'undefined' && $('#dir').length>0) {
+   if (typeof FileActions !== 'undefined' && $('#dir').length>0) {
 		        
         //Initiate the FileAction for file
 		OCA.Files.fileActions.registerAction({
@@ -37,7 +35,7 @@ $(document).ready(function(){
 					getState($id,$filename,$owner,"true");			
 				});
 		});
-    }
+   }
 	
 	//Get the Background-color from the database
 	$.ajax({
@@ -56,7 +54,7 @@ $(document).ready(function(){
 	async: false,
 	success: function(data){if(data!=""){fontcolor = data;}},
 	});
-	
+
 	//Add dynamic CSS code
 	var cssrules =  $("<style type='text/css'> </style>").appendTo("head");
 	cssrules.append(".statelock{ background-color:#"+color+";color:#"+fontcolor+" !important;}"+
@@ -81,7 +79,7 @@ function toggle_control(filename)
 					$tr.find('a.action[data-action!='+actionname+']').removeClass('locked');
 					$tr.find('a.action[data-action!='+actionname+']').addClass('permanent');
 					$tr.find('a.action[data-action='+actionname+']').removeClass('w2g_active');
-					$tr.find('a.namelock').addClass('name').removeClass('namelock');
+					$tr.find('a.namelock').addClass('name').removeClass('namelock').removeClass('ignore-click');
 					$tr.find('td.filesize').removeClass('statelock');
 					$tr.find('td.date').removeClass('statelock');
 					$tr.find('td').removeClass('statelock');
@@ -92,13 +90,18 @@ function toggle_control(filename)
 					$tr.find('a.permanent[data-action!='+actionname+']').removeClass('permanent');
 					$tr.find('a.action[data-action='+actionname+']').addClass('w2g_active');
 					$tr.find('a.action[data-action!='+actionname+']:not([class*=favorite])').addClass('locked');
-					$tr.find('a.name').addClass('namelock').removeClass('name');
+					$tr.find('a.name').addClass('namelock').removeClass('name').addClass('ignore-click');
 					$tr.find('td.filesize').addClass('statelock');
 					$tr.find('td.date').addClass('statelock');
 					$tr.find('td').addClass('statelock');
 			}
 		}
 	});
+
+        $(".ignore-click").click(function(){
+                return false;
+        });
+
 }
 
 //Get the current state
@@ -112,20 +115,18 @@ function getState(_id, _filename, _owner, _safe)
         type: "post",
         data: { path: escapeHTML(oc_path), safe: _safe, owner: _owner, id: _id},
         success: function(data){postmode(_filename,data)},
-    });
+    	});
 }
 
 //Push the status
 function postmode(filename,data)
 {
 		filename = filename.replace(/%20/g,' ');
-
 		var html = '<img class="svg" src="'+OC.imagePath('workin2gether','lock.png')+'"></img>'+'<span>'+escapeHTML(data)+'</span>';
 
 		$('tr').filterAttr('data-file',filename).find('td.filename').find('a.name').find('span.fileactions').find("a.action").filterAttr('data-action','getstate_w2g').html(html);
-
 		$('tr').filterAttr('data-file',filename).find('td.filename').find('a.namelock').find('span.fileactions').find("a.action").filterAttr('data-action','getstate_w2g').html(html);
 		
-		if(data!=t('workin2gether','No permission'))
+		if(!data.includes(t('workin2gether','No permission')))	
 			toggle_control(filename);
 }
