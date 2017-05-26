@@ -3,37 +3,33 @@ var fontcolor = 'ffffff';
 
 $(document).ready(function(){
 
-   text = "";
-   lockedtext = t('workin2gether','Locked');
    lockstate = t('workin2gether','Locked');
 	
    if (typeof FileActions !== 'undefined' && $('#dir').length>0) {
 		        
-        //Initiate the FileAction for file
 		OCA.Files.fileActions.registerAction({
 			name:'getstate_w2g',
-			displayName: t('workin2gether',text),
+			displayName: '',
 			mime: 'all',
 			permissions: OC.PERMISSION_ALL,
 			type: OCA.Files.FileActions.TYPE_INLINE,
 			icon: function(){ return OC.imagePath('workin2gether','lock.png')},
 			actionHandler: function(filename,context)
 			{
-				getState(context.$file.attr('data-id'),filename,context.$file.attr('data-share-owner'),"false");
+				getStateSingle(context.$file.attr('data-id'),filename,context.$file.attr('data-share-owner'),"false");
 			} 
 		});
-		
+
+		var _files = [];		
+
 		//Walk through all files in the active Filelist
 		$('#content').delegate('#fileList', 'fileActionsReady',function(ev){
-
-                var $fileList = ev.fileList.$fileList;
-
-				$fileList.find('tr').each(function(){
-					$filename = $(this).attr('data-file');
-					$owner = $(this).attr('data-share-owner');	
-					$id = $(this).attr('data-id');
-					getState($id,$filename,$owner,"true");			
-				});
+                	var $fileList = ev.fileList.$fileList;		
+			$fileList.find('tr').each(function(){
+				_files.push( [ $(this).attr('data-id') , $(this).attr('data-file') , $(this).attr('data-share-owner') , '' ] );
+			});
+				
+			getStateAll(_files,"true");
 		});
    }
 	
@@ -76,7 +72,7 @@ function toggle_control(filename)
 		var actionname = 'getstate_w2g';
 		if($_tr.indexOf(filename)!=-1)
 		{
-		    if($_tr.indexOf(lockedtext)==-1 && $_tr.indexOf(lockstate)==-1)
+		    if($_tr.indexOf(lockstate)==-1)
 		    {		//unlock
 					$tr.find('a.action[data-action!='+actionname+']').removeClass('locked');
 					$tr.find('a.action[data-action!='+actionname+']').addClass('permanent');
@@ -86,9 +82,9 @@ function toggle_control(filename)
 					$tr.find('td.date').removeClass('statelock');
 					$tr.find('td').removeClass('statelock');
 					$tr.find('a.statelock').addClass('name');
-			}
-			else if($_tr.indexOf(lockedtext)!=-1||$_tr.indexOf(lockstate)!=-1)
-			{		//lock	
+		    }
+		    else if($_tr.indexOf(lockstate)!=-1)
+		    {		//lock	
 					$tr.find('a.permanent[data-action!='+actionname+']').removeClass('permanent');
 					$tr.find('a.action[data-action='+actionname+']').addClass('w2g_active');
 					$tr.find('a.action[data-action!='+actionname+']:not([class*=favorite])').addClass('locked');
@@ -96,7 +92,7 @@ function toggle_control(filename)
 					$tr.find('td.filesize').addClass('statelock');
 					$tr.find('td.date').addClass('statelock');
 					$tr.find('td').addClass('statelock');
-			}
+		    }
 		}
 	});
 
@@ -107,7 +103,7 @@ function toggle_control(filename)
 }
 
 //Get the current state
-function getState(_id, _filename, _owner, _safe)
+function getStateSingle(_id, _filename, _owner, _safe)
 {
         oc_dir = $('#dir').val();
 	oc_path = oc_dir +'/'+_filename;
@@ -120,7 +116,29 @@ function getState(_id, _filename, _owner, _safe)
     	});
 }
 
-//Push the status
+function getStateAll(_array, _safe)
+{
+	oc_dir = $('#dir').val();
+	if (oc_dir !== '/') oc_dir += '/';
+
+	$.ajax({
+        	url: OC.filePath('workin2gether','ajax','workin2gether.php'),
+        	type: "post",
+        	data: { batch: "true", path: JSON.stringify(_array), safe: _safe , folder: escapeHTML(oc_dir)},
+        	success: function(data){PushAll(data)},
+        });
+
+}
+
+function PushAll( data )
+{
+	data = JSON.parse(data);
+	for ( var i = 0; i < data.length ; i++ )
+        {
+		postmode(data[i][1],data[i][3]);	
+	}
+}
+
 function postmode(filename,data)
 {
 		filename = filename.replace(/%20/g,' ');
