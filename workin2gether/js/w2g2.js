@@ -8,7 +8,7 @@ $(document).ready(function () {
     getFontColor();
     getDirectoryLockStatus();
 
-    lockstate = t('workin2gether', 'Locked');
+    lockstate = t('w2g2', 'Locked');
 
     if (typeof FileActions !== 'undefined' && $('#dir').length > 0) {
         OCA.Files.fileActions.registerAction({
@@ -18,7 +18,7 @@ $(document).ready(function () {
             permissions: OC.PERMISSION_ALL,
             type: OCA.Files.FileActions.TYPE_INLINE,
             icon: function () {
-                return OC.imagePath('workin2gether', 'lock.png')
+                return OC.imagePath('w2g2', 'lock.png')
             },
             actionHandler: function (filename, context) {
                 var id = context.$file.attr('data-id');
@@ -58,7 +58,7 @@ $(document).ready(function () {
     // Internal
     function getBackgroundColor() {
         $.ajax({
-            url: OC.filePath('workin2gether', 'ajax', 'getcolor.php'),
+            url: OC.filePath('w2g2', 'ajax', 'getcolor.php'),
             type: "post",
             data: {type: 'color'},
             async: false,
@@ -72,7 +72,7 @@ $(document).ready(function () {
 
     function getFontColor() {
         $.ajax({
-            url: OC.filePath('workin2gether', 'ajax', 'getcolor.php'),
+            url: OC.filePath('w2g2', 'ajax', 'getcolor.php'),
             type: "post",
             data: {type: 'fontcolor'},
             async: false,
@@ -86,7 +86,7 @@ $(document).ready(function () {
 
     function getDirectoryLockStatus() {
         $.ajax({
-            url: OC.filePath('workin2gether', 'ajax', 'directoryLock.php'),
+            url: OC.filePath('w2g2', 'ajax', 'directoryLock.php'),
             type: "post",
             data: {},
             async: false,
@@ -158,7 +158,7 @@ function getStateSingle(_id, _filename, _owner, _safe, _mountType, _fileType, _d
     };
 
     $.ajax({
-        url: OC.filePath('workin2gether', 'ajax', 'workin2gether.php'),
+        url: OC.filePath('w2g2', 'ajax', 'w2g2.php'),
         type: "post",
         data: data,
         success: function (data) {
@@ -182,7 +182,7 @@ function getStateForAllFiles(files, _safe, directoryLock) {
     };
 
     $.ajax({
-        url: OC.filePath('workin2gether', 'ajax', 'workin2gether.php'),
+        url: OC.filePath('w2g2', 'ajax', 'w2g2.php'),
         type: "post",
         data: data,
         success: function (data) {
@@ -211,7 +211,7 @@ function PushAll(files, directoryLock) {
 function postmode(fileName, message) {
     fileName = fileName.replace(/%20/g, ' ');
 
-    var html = '<img class="svg" src="' + OC.imagePath('workin2gether', 'lock.png') + '"></img>' + '<span>' + escapeHTML(message) + '</span>';
+    var html = '<img class="svg" src="' + OC.imagePath('w2g2', 'lock.png') + '"></img>' + '<span>' + escapeHTML(message) + '</span>';
 
     $('tr').filterAttr('data-file', fileName)
         .find('td.filename')
@@ -229,7 +229,7 @@ function postmode(fileName, message) {
         .filterAttr('data-action', 'getstate_w2g')
         .html(html);
 
-    if ( ! message.includes(t('workin2gether', 'No permission'))) {
+    if ( ! message.includes(t('w2g2', 'No permission'))) {
         toggle_control(fileName);
     }
 }

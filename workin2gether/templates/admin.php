@@ -1,6 +1,6 @@
 <?php
 
-namespace OCA\workin2gether;
+namespace OCA\w2g2;
 
 //backcolor
 $value = "008887";
@@ -141,7 +141,7 @@ if (\OC::$server->getDatabaseConnection()->tableExists(app::table))
 
 function db_fetcher(&$configkey, $configtype)
 {
-    $query = "SELECT * FROM *PREFIX*appconfig where configkey=? and appid='workin2gether' LIMIT 1";
+    $query = "SELECT * FROM *PREFIX*appconfig where configkey=? and appid='w2g2' LIMIT 1";
 
     $type = \OCP\DB::prepare($query)
         ->execute(array($configtype))

@@ -1,6 +1,6 @@
 <?php
 
-namespace OCA\workin2gether;
+namespace OCA\w2g2;
 
 class Helpers {
     public static function decodeCharacters($string)

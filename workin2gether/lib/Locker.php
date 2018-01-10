@@ -1,6 +1,6 @@
 <?php
 
-namespace OCA\workin2gether;
+namespace OCA\w2g2;
 
 class Locker {
     protected $safe = null;
@@ -18,7 +18,7 @@ class Locker {
         Database::fetch($this->directoryLock, 'directory_locking', "directory_locking_all");
         Database::fetch($this->extended, 'extended', "0");
 
-        $this->l = \OCP\Util::getL10N('workin2gether');
+        $this->l = \OCP\Util::getL10N('w2g2');
     }
 
     public function handle()

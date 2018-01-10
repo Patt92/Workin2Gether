@@ -1,11 +1,11 @@
 <?php
 
-namespace OCA\workin2gether;
+namespace OCA\w2g2;
 
 class Database {
     public static function fetch(&$configkey, $configtype, $_default)
     {
-        $query = "SELECT * FROM *PREFIX*appconfig where configkey=? and appid='workin2gether' LIMIT 1";
+        $query = "SELECT * FROM *PREFIX*appconfig where configkey=? and appid='w2g2' LIMIT 1";
 
         $type = \OCP\DB::prepare($query)
             ->execute(array($configtype))

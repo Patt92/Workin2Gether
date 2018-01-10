@@ -3,7 +3,7 @@
       xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
     <id>w2g2</id>
     <name>w2g2</name>
-    <namespace>workin2gether</namespace>
+    <namespace>w2g2</namespace>
     <summary>Visual locking of files and folders () to contribute to a better collaboration</summary>
     <description>
         <![CDATA[Pseudo multiaccess-management feature for Owncloud/Nextcloud.

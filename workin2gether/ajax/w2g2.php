@@ -1,12 +1,12 @@
 <?php
 
-namespace OCA\workin2gether;
+namespace OCA\w2g2;
 
 ini_set('display_errors', 1);
 
-\OCP\Util::addTranslations('workin2gether');
+\OCP\Util::addTranslations('w2g2');
 \OCP\JSON::checkLoggedIn();
-\OCP\JSON::checkAppEnabled('workin2gether');
+\OCP\JSON::checkAppEnabled('w2g2');
 \OCP\JSON::callCheck();
 
 $locker = new Locker();
