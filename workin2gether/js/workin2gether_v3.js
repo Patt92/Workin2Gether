@@ -140,8 +140,6 @@ function toggle_control(filename) {
 
 //Get the current state
 function getStateSingle(_id, _filename, _owner, _safe, _mountType, _fileType, _directoryLock) {
-    console.log('YO', _fileType, _directoryLock);
-    
     if (_fileType === 'dir' && _directoryLock === 'directory_locking_none') {
         console.log('cannot lock directory');
 
@@ -196,12 +194,12 @@ function getStateForAllFiles(files, _safe, directoryLock) {
 
 function PushAll(files, directoryLock) {
     files = JSON.parse(files);
-    
+
     for (var i = 0; i < files.length; i++) {
         var fileName = files[i][1];
         var message = files[i][3];
         var fileType = files[i][5];
-        
+
         // if (fileType === 'dir' && directoryLock === 'directory_locking_none') {
         //     return;
         // }

@@ -39,6 +39,7 @@ class Locker {
         $fileData = [];
 
         $fileData['path'] = stripslashes($_POST['path']);
+        $fileData['path'] = Helpers::decodeCharacters($fileData['path']);
 
         if (isset($_POST['owner'])) {
             $fileData['owner'] = $_POST['owner'];
@@ -73,7 +74,7 @@ class Locker {
             $fileData['owner'] = $files[$i][2];
             $fileData['path'] = $folder . $fileName;
             $fileData['mountType'] = $files[$i][4];
-            $fileData['fileType'] = $files[$i][5];
+            $fileData['fileType'] = count($files[$i]) >= 5 ? $files[$i][5] : null;
 
             $response = $this->check($fileData);
 
