@@ -75,4 +75,14 @@ $(document).ready(function(){
                         });
 	});
 
+	// Directory locking
+	$('input:radio[name="directory_locking"]').change(function() {
+        $.ajax({
+            url: OC.filePath('workin2gether','ajax','update.php'),
+            type: "post",
+            data: { mode: 'directory_locking', value: $("input:radio[name='directory_locking']:checked").attr('id')},
+            async: false,
+            success: function(data){},
+        });
+	});
 });

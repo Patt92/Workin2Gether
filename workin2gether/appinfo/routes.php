@@ -17,3 +17,6 @@ $this->create('workin2gether_ajax_admin_db', 'ajax/admin_db.php')
 
 $this->create('workin2gether_admin', 'admin.php')
 	->actionInclude('workin2gether/admin.php');
+
+$this->create('workin2gether_ajax_directoryLock', 'ajax/directoryLock.php')
+    ->actionInclude('workin2gether/ajax/directoryLock.php');

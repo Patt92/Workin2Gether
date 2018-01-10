@@ -1,11 +1,2 @@
-
 --------------------------------------------------------------
-
-support: patrick@gen7.de
-
-
-
-Language support
-- DE,EN	Myself
-- FR	Translation by Rachid Mokrani (rachid.mokrani@ifpen.fr)
-- JP	Translation by Tetsuro Yano (ynote)
+App build on https://github.com/Patt92/Workin2Gether that fixes issue with the Nextcloud Group Folders plugin.
