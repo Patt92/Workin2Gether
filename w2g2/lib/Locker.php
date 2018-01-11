@@ -113,11 +113,15 @@ class Locker {
             }
         } else {
             if ($this->safe === "false") {
+                if ($this->fileIsGroupFolder($fileData, $lockfile)) {
+                    return " Group folder cannot be locked.";
+                }
+
                 $lockedby_name = $this->getCurrentUserName($this->naming);
 
                 Database::lockFile($lockfile, $lockedby_name);
 
-                $this->ShowDisplayName($lockedby_name); //Korrektur bei DisplayName
+                $this->ShowDisplayName($lockedby_name);
 
                 return $this->showLockedByMessage($lockedby_name, $this->l);
             }
@@ -287,5 +291,18 @@ class Locker {
         $currentPath = Path::removeLastDirectory($file);
 
         return Database::getFileLock($currentPath);
+    }
+
+    protected function fileIsGroupFolder($fileData, $lockFile)
+    {
+        // if lockfile is group folder than it's value is something like: local::/var/www/...//__groupfolders/id
+        $pathSteps = explode("/", $lockFile);
+        $length = count($pathSteps);
+
+        $notOrdinaryFolder = is_numeric($pathSteps[$length - 1]) && $pathSteps[$length - 2] === '__groupfolders';
+
+        $isGroupFolder = $fileData['mountType'] === 'group' && $notOrdinaryFolder;
+
+        return $fileData['fileType'] === 'dir' && $isGroupFolder;
     }
 }

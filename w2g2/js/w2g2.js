@@ -152,9 +152,10 @@ function getStateSingle(_id, _filename, _owner, _safe, _mountType, _fileType, _d
     var data = {
         path: escapeHTML(oc_path),
         safe: _safe,
-        owner: _owner,
+        owner: _owner ? _owner : '',
         id: _id,
-        mountType: _mountType
+        mountType: _mountType ? _mountType : '',
+        fileType: _fileType
     };
 
     $.ajax({

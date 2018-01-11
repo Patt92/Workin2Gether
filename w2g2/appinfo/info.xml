@@ -2,7 +2,7 @@
 <info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
     <id>w2g2</id>
-    <name>w2g2</name>
+    <name>W2G2</name>
     <namespace>w2g2</namespace>
     <summary>Visual locking of files and folders () to contribute to a better collaboration</summary>
     <description>
@@ -12,7 +12,7 @@
 	]]></description>
     <licence>AGPL</licence>
     <author>Ionut Orzu</author>
-    <version>0.9.0</version>
+    <version>0.9.8</version>
     <category>social</category>
     <ocsid>164016</ocsid>
     <bugs>https://github.com/newroco/W2G2/issues</bugs>
