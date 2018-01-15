@@ -6,7 +6,6 @@ class Locker {
     protected $safe = null;
     protected $naming = "";
     protected $directoryLock = "";
-    protected $extended = "";
     protected $l;
 
     protected $request = null;
@@ -16,7 +15,6 @@ class Locker {
     {
         Database::fetch($this->naming, 'suffix', "rule_username");
         Database::fetch($this->directoryLock, 'directory_locking', "directory_locking_all");
-        Database::fetch($this->extended, 'extended', "0");
 
         $this->l = \OCP\Util::getL10N('w2g2');
     }
@@ -125,18 +123,6 @@ class Locker {
         }
 
         return null;
-    }
-
-    protected function extended_precheck($extended, $owner)
-    {
-        if ($extended == "0")
-            return 0;
-        elseif ($extended == "1") {
-            if ($owner == \OCP\User::getUser())
-                return 0;
-        }
-
-        return 1;
     }
 
     protected function fileFromGroupFolder($mountType)

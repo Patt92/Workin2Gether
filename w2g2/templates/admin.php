@@ -18,10 +18,6 @@ db_fetcher($naming, "suffix");
 $directoryLocking = "directory_locking_all";
 db_fetcher($directoryLocking, "directory_locking");
 
-//Permission
-$extended = "0";
-db_fetcher($extended, "extended");
-
 //Locked files
 if (\OC::$server->getDatabaseConnection()->tableExists(app::table))
     $result = \OCP\DB::prepare("SELECT * FROM *PREFIX*" . app::table)->execute()->fetchAll();
@@ -59,16 +55,6 @@ if (\OC::$server->getDatabaseConnection()->tableExists(app::table))
         } else {
             echo $l->t("There are no locked files at the moment");
         }
-
-        //Permission section
-        echo '
-		<br><u>' . $l->t("Permission management") . ':</u><br>
-		<br><input type="checkbox" id="w2g_lock_permission_extended" ';
-        if ($extended == "1") echo "checked";
-        echo '><label id="w2g_lpml">' . $l->t("Use the extended permission feature for managing locks") . '</label>
-		<br><em>' . $l->t("This feature allows unlocking only by the owner of the lock") . '. ' . $l->t("The upcoming release will add group based permissions") . '.</em>
-	     ';
-
 
         echo '<br>';
         //Suffix section
