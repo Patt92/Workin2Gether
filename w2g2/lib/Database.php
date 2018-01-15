@@ -34,11 +34,21 @@ class Database {
             ->execute(array($lockedFile));
     }
 
-    public static function getFileLock($file) {
+    public static function getFileLock($file)
+    {
         $query = "SELECT * FROM *PREFIX*" . app::table . " WHERE name = ?";
 
         return \OCP\DB::prepare($query)
             ->execute(array($file))
+            ->fetchAll();
+    }
+
+    public static function getUserByUsername($username)
+    {
+        $query = "SELECT * FROM *PREFIX*" . "users" . " WHERE uid = ?";
+
+        return \OCP\DB::prepare($query)
+            ->execute(array($username))
             ->fetchAll();
     }
 }

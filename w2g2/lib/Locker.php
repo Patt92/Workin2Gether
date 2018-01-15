@@ -97,19 +97,18 @@ class Locker {
         $db_lock_state = $this->getLockStateForFile($lockfile, $fileData['fileType']);
 
         if ($db_lock_state != null) {
-            $lockedby_name = $this->getUserThatLockedTheFile($db_lock_state);
-            $this->ShowUserName($lockedby_name);
+            $lockerUsername = $this->getUserThatLockedTheFile($db_lock_state);
 
             if ($this->safe === "false") {
-                if ($this->currentUserIsTheOriginalLocker($lockedby_name)) {
-                    Database::unlockFile($lockfile);
+                if ($this->currentUserIsTheOriginalLocker($lockerUsername)) {
+                    $this->unlock($lockfile, $fileData['id']);
 
                     return " Unlocked.";
                 }
 
                 return " " . $this->l->t("No permission");
             } else {
-                return $this->showLockedByMessage($lockedby_name, $this->l);
+                return $this->showLockedByMessage($lockerUsername, $this->l, false);
             }
         } else {
             if ($this->safe === "false") {
@@ -117,13 +116,11 @@ class Locker {
                     return " Group folder cannot be locked.";
                 }
 
-                $lockedby_name = $this->getCurrentUserName($this->naming);
+                $lockerUsername = $this->getCurrentUserName();
 
-                Database::lockFile($lockfile, $lockedby_name);
+                $this->lock($lockfile,  $lockerUsername, $fileData['id']);
 
-                $this->ShowDisplayName($lockedby_name);
-
-                return $this->showLockedByMessage($lockedby_name, $this->l);
+                return $this->showLockedByMessage($lockerUsername, $this->l, true);
             }
         }
 
@@ -140,22 +137,6 @@ class Locker {
         }
 
         return 1;
-    }
-
-    protected function ShowDisplayName(&$lockedby_name)
-    {
-        if (strstr($lockedby_name, "|")) {
-            $temp_ln = explode("|", $lockedby_name);
-            $lockedby_name = $temp_ln[0];
-        }
-    }
-
-    protected function ShowUserName(&$lockedby_name)
-    {
-        if (strstr($lockedby_name, "|")) {
-            $temp_ln = explode("|", $lockedby_name);
-            $lockedby_name = $temp_ln[1];
-        }
     }
 
     protected function fileFromGroupFolder($mountType)
@@ -215,16 +196,14 @@ class Locker {
         return $this->checkFromParent($file, $fileType);
     }
 
-    protected function getCurrentUserName($naming)
+    protected function getCurrentUserName()
     {
-        $lockedby_name = \OCP\User::getUser();
+        return \OCP\User::getUser();
+    }
 
-        if ($naming == "rule_displayname") {
-            $lockedby_name = \OCP\User::getDisplayName();
-            $lockedby_name .= "|" . \OCP\User::getUser();
-        }
-
-        return $lockedby_name;
+    protected function getCurrentUserDisplayName()
+    {
+        return \OCP\User::getDisplayName();
     }
 
     protected function getUserThatLockedTheFile($db_lock_state)
@@ -232,14 +211,35 @@ class Locker {
         return $db_lock_state[0]['locked_by'];
     }
 
-    protected function showLockedByMessage($lockedby_name, $l)
+    protected function showLockedByMessage($lockerUsername, $l, $isCurrentUser)
     {
-        return " " . $l->t("Locked") . " " . $l->t("by") . " " . $lockedby_name;
+        if ($this->naming === "rule_displayname") {
+            $lockerUsername = $isCurrentUser
+                ? $this->getCurrentUserDisplayName()
+                : $this->getOtherUserDisplayName($lockerUsername);
+        }
+
+        return " " . $l->t("Locked") . " " . $l->t("by") . " " . $lockerUsername;
+    }
+
+    /**
+     * Get a user's display name given his/hers username or the username if the display name is not set.
+     *
+     * @param $username
+     * @return mixed
+     */
+    protected function getOtherUserDisplayName($username)
+    {
+        $usersMatchingUsername = Database::getUserByUsername($username);
+
+        return $usersMatchingUsername[0]["displayname"]
+            ? $usersMatchingUsername[0]["displayname"]
+            : $username;
     }
 
     protected function currentUserIsTheOriginalLocker($owner)
     {
-        return $owner == \OCP\User::getUser();
+        return $owner === $this->getCurrentUserName();
     }
 
     protected function getFilePath($id)
@@ -304,5 +304,19 @@ class Locker {
         $isGroupFolder = $fileData['mountType'] === 'group' && $notOrdinaryFolder;
 
         return $fileData['fileType'] === 'dir' && $isGroupFolder;
+    }
+
+    protected function lock($lockfile, $lockedby_name, $fileId)
+    {
+        Database::lockFile($lockfile, $lockedby_name);
+
+        Event::emit('lock', $fileId);
+    }
+
+    protected function unlock($lockfile, $fileId)
+    {
+        Database::unlockFile($lockfile);
+
+        Event::emit('unlock', $fileId);
     }
 }
