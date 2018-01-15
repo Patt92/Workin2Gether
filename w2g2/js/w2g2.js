@@ -256,8 +256,12 @@ function unlock($tr, actionname) {
 
 function lock($tr, actionname) {
     $tr.find('a.permanent[data-action!=' + actionname + ']').removeClass('permanent');
+
     $tr.find('a.action[data-action=' + actionname + ']').addClass('w2g_active');
+
+    // $tr.find('a.action[data-action!=' + actionname + ']:not([class*=action-menu])').addClass('locked');
     $tr.find('a.action[data-action!=' + actionname + ']:not([class*=favorite])').addClass('locked');
+
     $tr.find('a.name').addClass('namelock').removeClass('name').addClass('ignore-click');
 
     var $fileSize = $tr.find('td.filesize');
