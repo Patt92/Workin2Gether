@@ -51,4 +51,36 @@ class Database {
             ->execute(array($username))
             ->fetchAll();
     }
+
+    /**
+     * Get all categories for the given file, like favorites.
+     *
+     * @param $fileId
+     * @return mixed
+     */
+    public static function getCategoriesForFile($fileId)
+    {
+        $query = "SELECT * FROM *PREFIX*" . "vcategory_to_object" . " WHERE objid = ?";
+
+        return \OCP\DB::prepare($query)
+            ->execute(array($fileId))
+            ->fetchAll();
+    }
+
+    /**
+     * Get favorite data for the given category, like the userId
+     *
+     * @param $categoryId
+     * @return mixed
+     */
+    public static function getFavoriteByCategoryId($categoryId)
+    {
+        $favorite = '_$!<Favorite>!$_' ;
+
+        $query = "SELECT * FROM *PREFIX*" . "vcategory" . " WHERE category = ? AND id = ?";
+
+        return \OCP\DB::prepare($query)
+            ->execute(array($favorite, $categoryId))
+            ->fetchAll();
+    }
 }

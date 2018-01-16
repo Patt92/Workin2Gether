@@ -4,12 +4,12 @@ a.action.locked{ display:none !important; }
 a.action-getstate_w2g.locked{ display:inline !important; }
 
 a.statelock a.action[data-action!=getstate_dir&&data-action!=getstate_file]{
-pointer-events:none;
+    pointer-events:none;
 }
 a.namelock
 {
-line-height: 50px;
-padding: 0 !important;
+    line-height: 50px;
+    padding: 0 !important;
 }
 a.namelock .nametext{position:absolute !important;}
 
@@ -33,7 +33,7 @@ table td.filename a.namelock {
     padding: 0;
 }
 .has-favorites #fileList td.filename a.namelock {
-        left: 50px;
-        margin-right: 50px;
+    left: 50px;
+    margin-right: 50px;
 }
 

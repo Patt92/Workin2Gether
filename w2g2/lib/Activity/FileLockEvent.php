@@ -10,17 +10,37 @@ class FileLockEvent extends Event {
 
     protected $event;
     protected $fileId;
+    protected $lockerUser;
 
-    public function __construct($event, $fileId) {
+    public function __construct($event, $fileId, $lockerUser)
+    {
         $this->event = $event;
         $this->fileId = $fileId;
+        $this->lockerUser = $lockerUser;
     }
-
-    public function getEvent() {
+    
+    public function getEvent()
+    {
         return $this->event;
     }
 
-    public function getFileId() {
+    public function getFileId()
+    {
         return $this->fileId;
+    }
+
+    public function getLockerUser()
+    {
+        return $this->lockerUser;
+    }
+
+    public function getLockEventName()
+    {
+        return self::EVENT_LOCK;
+    }
+
+    public function getUnlockEventName()
+    {
+        return self::EVENT_UNLOCK;
     }
 }

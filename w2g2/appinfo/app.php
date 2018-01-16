@@ -37,4 +37,18 @@ if (\OCP\App::isEnabled(app::name)) {
     }
 
     app::launch();
+
+    $notificationManager = \OC::$server->getNotificationManager();
+    $notificationManager->registerNotifier(
+        function() {
+            $application = new \OCP\AppFramework\App('w2g2');
+
+            return $application->getContainer()->query(\OCA\w2g2\Notification\Notifier::class);
+        },
+        function () {
+            $l = \OC::$server->getL10N('w2g2');
+
+            return ['id' => 'w2g2', 'name' => $l->t('w2g2')];
+        }
+    );
 }

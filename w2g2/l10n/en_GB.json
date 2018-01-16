@@ -3,6 +3,7 @@
 		"File is locked" : "File is locked",
 		"Status: locked" : "Status: locked",
 		"Status: not locked" : "Status: not locked",
-		"filelock" : "filelock"
+		"filelock" : "filelock",
+		"You locked the file": "You locked the file"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }

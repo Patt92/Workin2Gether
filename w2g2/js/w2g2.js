@@ -157,7 +157,7 @@ function getStateSingle(_id, _filename, _owner, _safe, _mountType, _fileType, _d
         mountType: _mountType ? _mountType : '',
         fileType: _fileType
     };
-
+    
     $.ajax({
         url: OC.filePath('w2g2', 'ajax', 'w2g2.php'),
         type: "post",

@@ -99,7 +99,7 @@ class Locker {
 
             if ($this->safe === "false") {
                 if ($this->currentUserIsTheOriginalLocker($lockerUsername)) {
-                    $this->unlock($lockfile, $fileData['id']);
+                    $this->unlock($lockfile, $lockerUsername, $fileData['id']);
 
                     return " Unlocked.";
                 }
@@ -296,13 +296,17 @@ class Locker {
     {
         Database::lockFile($lockfile, $lockedby_name);
 
-        Event::emit('lock', $fileId);
+        $lockerUserDisplayName = $this->getOtherUserDisplayName($lockedby_name);
+
+        Event::emit('lock', $fileId, $lockerUserDisplayName);
     }
 
-    protected function unlock($lockfile, $fileId)
+    protected function unlock($lockfile, $lockedby_name, $fileId)
     {
         Database::unlockFile($lockfile);
 
-        Event::emit('unlock', $fileId);
+        $lockerUserDisplayName = $this->getOtherUserDisplayName($lockedby_name);
+
+        Event::emit('unlock', $fileId, $lockerUserDisplayName);
     }
 }
