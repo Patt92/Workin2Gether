@@ -2,6 +2,9 @@
 
 namespace OCA\w2g2;
 
+use RecursiveArrayIterator;
+use RecursiveIteratorIterator;
+
 class Locker {
     protected $safe = null;
     protected $naming = "";
@@ -218,9 +221,29 @@ class Locker {
     {
         $usersMatchingUsername = Database::getUserByUsername($username);
 
-        return $usersMatchingUsername[0]["displayname"]
-            ? $usersMatchingUsername[0]["displayname"]
-            : $username;
+        // check if the user is stored within the 'users' table and not in the 'accounts' table (ex: ldap)
+        if (count($usersMatchingUsername) > 0 && array_key_exists("displayname", $usersMatchingUsername[0])) {
+            return $usersMatchingUsername[0]["displayname"];
+        }
+
+        $ldapUsersMatchingUsername = Database::getUserByLDAPUsername($username);
+
+        if (count($ldapUsersMatchingUsername) > 0) {
+            $ldapUser = $ldapUsersMatchingUsername[0];
+            $ldapUserData = $ldapUser['data'];
+
+            $parsedJsonResults = json_decode($ldapUserData, true);
+
+            // parse all fields from the data, find the attribute 'displayname'
+            // and take the data from the value subattribute
+            foreach ($parsedJsonResults as $attribute => $data) {
+                if ($attribute === "displayname") {
+                    return $data["value"];
+                }
+            }
+        }
+
+        return $username;
     }
 
     protected function currentUserIsTheOriginalLocker($owner)

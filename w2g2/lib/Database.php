@@ -52,6 +52,15 @@ class Database {
             ->fetchAll();
     }
 
+    public static function getUserByLDAPUsername($username)
+    {
+        $query = "SELECT * FROM *PREFIX*" . "accounts" . " WHERE uid = ?";
+
+        return \OCP\DB::prepare($query)
+            ->execute(array($username))
+            ->fetchAll();
+    }
+
     /**
      * Get all categories for the given file, like favorites.
      *
