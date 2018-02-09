@@ -33,23 +33,33 @@ $(document).ready(function () {
         });
 
         var _files = [];
+        var alreadyChecked = [];
 
         //Walk through all files in the active Filelist
         $('#content').delegate('#fileList', 'fileActionsReady', function (event) {
             var $fileList = event.fileList.$fileList;
 
             $fileList.find('tr').each(function () {
-                _files.push([
-                    $(this).attr('data-id'),
-                    $(this).attr('data-file'),
-                    $(this).attr('data-share-owner'),
-                    '',
-                    $(this).attr('data-mounttype'),
-                    $(this).attr('data-type')
-                ]);
+                var id = $(this).context.dataset.id;
+
+                // Check if this resource (file, directory) was already check if locked or not
+                if (alreadyChecked.indexOf(id) === -1) {
+                    alreadyChecked.push(id);
+
+                    _files.push([
+                        $(this).attr('data-id'),
+                        $(this).attr('data-file'),
+                        $(this).attr('data-share-owner'),
+                        '',
+                        $(this).attr('data-mounttype'),
+                        $(this).attr('data-type')
+                    ]);
+                }
             });
 
             getStateForAllFiles(_files, "true", directoryLock);
+
+            _files = [];
         });
     }
 
@@ -157,7 +167,7 @@ function getStateSingle(_id, _filename, _owner, _safe, _mountType, _fileType, _d
         mountType: _mountType ? _mountType : '',
         fileType: _fileType
     };
-    
+
     $.ajax({
         url: OC.filePath('w2g2', 'ajax', 'w2g2.php'),
         type: "post",
