@@ -9,6 +9,7 @@ use OCP\L10N\IFactory;
 use OCP\Notification\INotification;
 use OCP\Notification\INotifier;
 use OCA\w2g2\Database;
+use OCA\w2g2\User;
 
 use \OCP\ILogger;
 
@@ -74,13 +75,8 @@ class Notifier implements INotifier {
         }
 
         $file = $nodes[0];
-
         $lockerUser = $parameters[2];
-        $usersMatchingUsername = Database::getUserByUsername($lockerUser);
-        $lockerUserDisplayName = $usersMatchingUsername[0]["displayname"]
-            ? $usersMatchingUsername[0]["displayname"]
-            : $lockerUser;
-
+        $lockerUserDisplayName = User::getDisplayName($lockerUser);
         $eventType = $parameters[3];
 
         $notification->setParsedSubject(

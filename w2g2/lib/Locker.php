@@ -2,9 +2,6 @@
 
 namespace OCA\w2g2;
 
-use RecursiveArrayIterator;
-use RecursiveIteratorIterator;
-
 class Locker {
     protected $safe = null;
     protected $naming = "";
@@ -117,7 +114,7 @@ class Locker {
                     return " Group folder cannot be locked.";
                 }
 
-                $lockerUsername = $this->getCurrentUserName();
+                $lockerUsername = User::getCurrentUserName();
 
                 $this->lock($lockfile,  $lockerUsername, $fileData['id']);
 
@@ -185,16 +182,6 @@ class Locker {
         return $this->checkFromParent($file, $fileType);
     }
 
-    protected function getCurrentUserName()
-    {
-        return \OCP\User::getUser();
-    }
-
-    protected function getCurrentUserDisplayName()
-    {
-        return \OCP\User::getDisplayName();
-    }
-
     protected function getUserThatLockedTheFile($db_lock_state)
     {
         return $db_lock_state[0]['locked_by'];
@@ -204,55 +191,16 @@ class Locker {
     {
         if ($this->naming === "rule_displayname") {
             $lockerUsername = $isCurrentUser
-                ? $this->getCurrentUserDisplayName()
-                : $this->getOtherUserDisplayName($lockerUsername);
+                ? User::getCurrentUserDisplayName()
+                : User::getDisplayName($lockerUsername);
         }
 
         return " " . $l->t("Locked") . " " . $l->t("by") . " " . $lockerUsername;
     }
 
-    /**
-     * Get a user's display name given his/hers username or the username if the display name is not set.
-     *
-     * @param $username
-     * @return mixed
-     */
-    protected function getOtherUserDisplayName($username)
-    {
-        $usersMatchingUsername = Database::getUserByUsername($username);
-
-        // check if the user is stored within the 'users' table and not in the 'accounts' table (ex: ldap)
-        if (
-            count($usersMatchingUsername) > 0 &&
-            array_key_exists("displayname", $usersMatchingUsername[0]) &&
-            $usersMatchingUsername[0]["displayname"]
-        ) {
-            return $usersMatchingUsername[0]["displayname"];
-        }
-
-        $ldapUsersMatchingUsername = Database::getUserByLDAPUsername($username);
-
-        if (count($ldapUsersMatchingUsername) > 0) {
-            $ldapUser = $ldapUsersMatchingUsername[0];
-            $ldapUserData = $ldapUser['data'];
-
-            $parsedJsonResults = json_decode($ldapUserData, true);
-
-            // parse all fields from the data, find the attribute 'displayname'
-            // and take the data from the value subattribute
-            foreach ($parsedJsonResults as $attribute => $data) {
-                if ($attribute === "displayname" && $data["value"]) {
-                    return $data["value"];
-                }
-            }
-        }
-
-        return $username;
-    }
-
     protected function currentUserIsTheOriginalLocker($owner)
     {
-        return $owner === $this->getCurrentUserName();
+        return $owner === User::getCurrentUserName();
     }
 
     protected function getFilePath($id)
@@ -323,7 +271,7 @@ class Locker {
     {
         Database::lockFile($lockfile, $lockedby_name);
 
-        $lockerUserDisplayName = $this->getOtherUserDisplayName($lockedby_name);
+        $lockerUserDisplayName = User::getDisplayName($lockedby_name);
 
         Event::emit('lock', $fileId, $lockerUserDisplayName);
     }
@@ -332,7 +280,7 @@ class Locker {
     {
         Database::unlockFile($lockfile);
 
-        $lockerUserDisplayName = $this->getOtherUserDisplayName($lockedby_name);
+        $lockerUserDisplayName = User::getDisplayName($lockedby_name);
 
         Event::emit('unlock', $fileId, $lockerUserDisplayName);
     }
