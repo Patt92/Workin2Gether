@@ -2,12 +2,14 @@
 
 namespace OCA\w2g2\AppInfo;
 
-
 $this->create('w2g2_ajax_getcolor', 'ajax/getcolor.php')
     ->actionInclude('w2g2/ajax/getcolor.php');
 
 $this->create('w2g2_ajax_core', 'ajax/w2g2.php')
     ->actionInclude('w2g2/ajax/w2g2.php');
+
+$this->create('w2g2_ajax_checkState', 'ajax/checkState.php')
+    ->actionInclude('w2g2/ajax/checkState.php');
 
 $this->create('w2g2_ajax_update', 'ajax/update.php')
     ->actionInclude('w2g2/ajax/update.php');

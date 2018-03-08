@@ -8,7 +8,7 @@ class Database {
         $query = "SELECT * FROM *PREFIX*appconfig where configkey=? and appid='w2g2' LIMIT 1";
 
         $type = \OCP\DB::prepare($query)
-            ->execute(array($configtype))
+            ->execute([$configtype])
             ->fetchAll();
 
         if (count($type) >= 1) {
@@ -18,28 +18,28 @@ class Database {
         };
     }
 
-    public static function lockFile($file, $lockedByName)
+    public static function lockFile($fileId, $lockedByName)
     {
-        $query = "INSERT INTO *PREFIX*" . app::table . "(name, locked_by) VALUES(?,?)";
+        $query = "INSERT INTO *PREFIX*" . app::table . "(file_id, locked_by) VALUES(?,?)";
 
         \OCP\DB::prepare($query)
-            ->execute(array($file, $lockedByName));
+            ->execute([$fileId, $lockedByName]);
     }
 
-    public static function unlockFile($lockedFile)
+    public static function unlockFile($fileId)
     {
-        $query = "DELETE FROM *PREFIX*" . app::table . " WHERE name=?";
+        $query = "DELETE FROM *PREFIX*" . app::table . " WHERE file_id=?";
 
         \OCP\DB::prepare($query)
-            ->execute(array($lockedFile));
+            ->execute([$fileId]);
     }
 
-    public static function getFileLock($file)
+    public static function getFileLock($fileId)
     {
-        $query = "SELECT * FROM *PREFIX*" . app::table . " WHERE name = ?";
+        $query = "SELECT * FROM *PREFIX*" . app::table . " WHERE file_id = ?";
 
         return \OCP\DB::prepare($query)
-            ->execute(array($file))
+            ->execute([$fileId])
             ->fetchAll();
     }
 
@@ -48,7 +48,7 @@ class Database {
         $query = "SELECT * FROM *PREFIX*" . "users" . " WHERE uid = ?";
 
         return \OCP\DB::prepare($query)
-            ->execute(array($username))
+            ->execute([$username])
             ->fetchAll();
     }
 
@@ -57,7 +57,7 @@ class Database {
         $query = "SELECT * FROM *PREFIX*" . "accounts" . " WHERE uid = ?";
 
         return \OCP\DB::prepare($query)
-            ->execute(array($username))
+            ->execute([$username])
             ->fetchAll();
     }
 
@@ -72,7 +72,7 @@ class Database {
         $query = "SELECT * FROM *PREFIX*" . "vcategory_to_object" . " WHERE objid = ?";
 
         return \OCP\DB::prepare($query)
-            ->execute(array($fileId))
+            ->execute([$fileId])
             ->fetchAll();
     }
 
@@ -89,7 +89,26 @@ class Database {
         $query = "SELECT * FROM *PREFIX*" . "vcategory" . " WHERE category = ? AND id = ?";
 
         return \OCP\DB::prepare($query)
-            ->execute(array($favorite, $categoryId))
+            ->execute([$favorite, $categoryId])
+            ->fetchAll();
+    }
+
+    public static function getGroupFolderFile()
+    {
+        $groupFolderName = "__groupfolders";
+        $query = "SELECT * FROM *PREFIX*" . "filecache" . " WHERE name = ? AND path = ?";
+
+        return \OCP\DB::prepare($query)
+            ->execute([$groupFolderName, $groupFolderName])
+            ->fetchAll();
+    }
+
+    public static function getFile($fileId)
+    {
+        $query = "SELECT * FROM *PREFIX*" . "filecache" . " WHERE fileid = ?";
+
+        return \OCP\DB::prepare($query)
+            ->execute([$fileId])
             ->fetchAll();
     }
 }

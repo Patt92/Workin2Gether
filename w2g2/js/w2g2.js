@@ -5,6 +5,8 @@
     var fileBeingActedUponId = '';
     var directoryLock = '';
     var url = OC.filePath('w2g2', 'ajax', 'w2g2.php');
+    var checkStateUrl = OC.filePath('w2g2', 'ajax', 'checkState.php');
+    var directoryLockUrl = OC.filePath('w2g2', 'ajax', 'directoryLock.php');
     var lockstate = t('w2g2', 'Locked');
 
     $(document).ready(function () {
@@ -27,39 +29,43 @@
                 }
             });
 
-            var _files = [];
-            var alreadyChecked = [];
-
-            //Walk through all files in the active Filelist
-            $('#content').delegate('#fileList', 'fileActionsReady', function (event) {
-                var $fileList = event.fileList.$fileList;
-
-                $fileList.find('tr').each(function () {
-                    var id = $(this).context.dataset.id;
-
-                    // Check if this resource (file, directory) was already check if locked or not
-                    if (alreadyChecked.indexOf(id) === -1) {
-                        alreadyChecked.push(id);
-
-                        _files.push([
-                            $(this).attr('data-id'),
-                            $(this).attr('data-file'),
-                            $(this).attr('data-share-owner'),
-                            '',
-                            $(this).attr('data-mounttype'),
-                            $(this).attr('data-type')
-                        ]);
-                    }
-                });
-
-                getStateForAllFiles(_files, "true", directoryLock);
-
-                _files = [];
-            });
+            initialLockStateCheck();
         }
 
         buildCSS();
     });
+
+    function initialLockStateCheck() {
+        var files = [];
+        var alreadyChecked = [];
+
+        //Walk through all files in the active Filelist
+        $('#content').delegate('#fileList', 'fileActionsReady', function (event) {
+            var $fileList = event.fileList.$fileList;
+
+            $fileList.find('tr').each(function () {
+                var id = $(this).context.dataset.id;
+
+                // Check if this resource (file, directory) was already check if locked or not
+                if (alreadyChecked.indexOf(id) === -1) {
+                    alreadyChecked.push(id);
+
+                    files.push([
+                        $(this).attr('data-id'),
+                        $(this).attr('data-file'),
+                        $(this).attr('data-share-owner'),
+                        '',
+                        $(this).attr('data-mounttype'),
+                        $(this).attr('data-type')
+                    ]);
+                }
+            });
+
+            getStateForAllFiles(files, "true", directoryLock);
+
+            files = [];
+        });
+    }
 
     //Switch the Lockstate
     function toggle_control(filename) {
@@ -144,21 +150,18 @@
         };
 
         var data = {
-            batch: "true",
-            path: JSON.stringify(files),
-            safe: _safe,
+            files: JSON.stringify(files),
             folder: escapeHTML(oc_dir)
         };
 
         $.ajax({
-            url: url,
+            url: checkStateUrl,
             type: "post",
             data: data,
             success: function (data) {
                 updateAllFilesUI(data, directoryLock);
             },
         });
-
     }
 
     function updateAllFilesUI(files, directoryLock) {
@@ -313,7 +316,7 @@
 
     function getDirectoryLockStatus() {
         $.ajax({
-            url: OC.filePath('w2g2', 'ajax', 'directoryLock.php'),
+            url: directoryLockUrl,
             type: "post",
             data: {},
             async: false,

@@ -2,286 +2,88 @@
 
 namespace OCA\w2g2;
 
-class Locker {
-    protected $safe = null;
+class Locker
+{
+    protected $uiMessage;
     protected $naming = "";
     protected $directoryLock = "";
-    protected $l;
+    protected $fileData = [];
 
-    protected $request = null;
-    protected $database = null;
-
-    public function __construct()
+    public function __construct($request)
     {
+        $this->uiMessage = new UIMessage();
+
         Database::fetch($this->naming, 'suffix', "rule_username");
         Database::fetch($this->directoryLock, 'directory_locking', "directory_locking_all");
 
-        $this->l = \OCP\Util::getL10N('w2g2');
+        $this->fileData['path'] = stripslashes($request['path']);
+        $this->fileData['path'] = Helpers::decodeCharacters($this->fileData['path']);
+
+        if (isset($request['owner'])) {
+            $this->fileData['owner'] = $request['owner'];
+        }
+
+        if (isset($request['id'])) {
+            $this->fileData['id'] = $request['id'];
+        }
+
+        if (isset($request['mountType'])) {
+            $this->fileData['mountType'] = $request['mountType'];
+        }
+
+        if (isset($request['fileType'])) {
+            $this->fileData['fileType'] = $request['fileType'];
+        }
     }
 
     public function handle()
     {
-        if (isset($_POST['safe'])) {
-            $this->safe = $_POST['safe'];
-        }
+        $file = new File($this->fileData['id']);
 
-        if ( ! isset($_POST['batch'])) {
-            return $this->handleSingleFile();
-        }
-
-        return $this->handleMultipleFiles();
-    }
-
-    protected function handleSingleFile()
-    {
-        $fileData = [];
-
-        $fileData['path'] = stripslashes($_POST['path']);
-        $fileData['path'] = Helpers::decodeCharacters($fileData['path']);
-
-        if (isset($_POST['owner'])) {
-            $fileData['owner'] = $_POST['owner'];
-        }
-
-        if (isset($_POST['id'])) {
-            $fileData['id'] = $_POST['id'];
-        }
-
-        if (isset($_POST['mountType'])) {
-            $fileData['mountType'] = $_POST['mountType'];
-        }
-
-        if (isset($_POST['fileType'])) {
-            $fileData['fileType'] = $_POST['fileType'];
-        }
-
-        return $this->check($fileData);
-    }
-
-    protected function handleMultipleFiles()
-    {
-        $files = json_decode($_POST['path'], true);
-        $folder = $_POST['folder'];
-
-        for ($i = 0; $i < count($files); $i++) {
-            $fileData = [];
-
-            $fileName = $files[$i][1];
-
-            $fileData['id'] = $files[$i][0];
-            $fileData['owner'] = $files[$i][2];
-            $fileData['path'] = $folder . $fileName;
-            $fileData['mountType'] = $files[$i][4];
-            $fileData['fileType'] = count($files[$i]) >= 5 ? $files[$i][5] : null;
-
-            $response = $this->check($fileData);
-
-            if ($response !== null) {
-                $files[$i][3] = $response;
-            }
-        }
-
-        return json_encode($files);
-    }
-
-    protected function check($fileData)
-    {
-        if ($this->fileFromGroupFolder($fileData['mountType']) || $this->fileFromSharing($fileData['owner'])) {
-            $lockfile = $this->getLockpathFromExternalSource($fileData['id']);
+        if ($file->isLocked()) {
+            return $this->attemptUnlock($file);
         } else {
-            $lockfile = $this->getLockpathFromCurrentUserFiles($fileData['path']);
+            return $this->lock($file);
+        }
+    }
+
+    protected function attemptUnlock($file)
+    {
+        if ($file->canBeUnlockedBy(User::getCurrentUserName())) {
+            $file->unlock();
+
+            return $this->uiMessage->getUnlocked();
         }
 
-        $db_lock_state = $this->getLockStateForFile($lockfile, $fileData['fileType']);
+        return $this->uiMessage->getNoPermission();
+    }
 
-        if ($db_lock_state != null) {
-            $lockerUsername = $this->getUserThatLockedTheFile($db_lock_state);
-
-            if ($this->safe === "false") {
-                if ($this->currentUserIsTheOriginalLocker($lockerUsername)) {
-                    $this->unlock($lockfile, $lockerUsername, $fileData['id']);
-
-                    return " Unlocked.";
-                }
-
-                return " " . $this->l->t("No permission");
-            } else {
-                return $this->showLockedByMessage($lockerUsername, $this->l, false);
-            }
-        } else {
-            if ($this->safe === "false") {
-                if ($this->fileIsGroupFolder($fileData, $lockfile)) {
-                    return " Group folder cannot be locked.";
-                }
-
-                $lockerUsername = User::getCurrentUserName();
-
-                $this->lock($lockfile,  $lockerUsername, $fileData['id']);
-
-                return $this->showLockedByMessage($lockerUsername, $this->l, true);
-            }
+    protected function lock($file)
+    {
+        if ($file->isGroupFolder()) {
+            return " Group folder cannot be locked.";
         }
 
-        return null;
+        $file->lock(User::getCurrentUserName());
+
+        return $this->uiMessage->getLocked(User::getCurrentUserName());
     }
 
-    protected function fileFromGroupFolder($mountType)
-    {
-        return $mountType === 'group';
-    }
-
-    protected function fileFromSharing($owner)
-    {
-        return ! is_null($owner) && $owner !== '';
-    }
-
-    protected function getLockpathFromExternalSource($id)
-    {
-        $query = \OCP\DB::prepare("
-          SELECT X.path, Y.id 
-          FROM *PREFIX*filecache X 
-          INNER JOIN *PREFIX*storages Y 
-          ON X.storage = Y.numeric_id 
-          WHERE X.fileid = ? LIMIT 1
-    ");
-
-        $result = $query->execute(array($id))
-            ->fetchAll();
-
-        $original_path = $result[0]['path'];
-        $storage_id = str_replace("home::", "", $result[0]['id']) . '/';
-
-        return $storage_id . $original_path;
-    }
-
-    protected function getLockpathFromCurrentUserFiles($path)
-    {
-        return \OCP\USER::getUser() . "/files" . Path::getClean($path);
-    }
-
-    /**
-     * Must return an array with the first item having the key 'locked_by'
-     * ex: db_lock_state[0]["locked_by"]
-     *
-     * @param $file
-     * @param $fileType
-     * @return mixed|null
-     */
-    protected function getLockStateForFile($file, $fileType)
-    {
-        $hasLock = Database::getFileLock($file);
-
-        if ($hasLock != null) {
-            return $hasLock;
-        }
-
-        if ($this->directoryLock === 'directory_locking_all') {
-            return $this->checkFromAll($file);
-        }
-
-        return $this->checkFromParent($file, $fileType);
-    }
-
-    protected function getUserThatLockedTheFile($db_lock_state)
-    {
-        return $db_lock_state[0]['locked_by'];
-    }
-
-    protected function showLockedByMessage($lockerUsername, $l, $isCurrentUser)
-    {
-        if ($this->naming === "rule_displayname") {
-            $lockerUsername = $isCurrentUser
-                ? User::getCurrentUserDisplayName()
-                : User::getDisplayName($lockerUsername);
-        }
-
-        return " " . $l->t("Locked") . " " . $l->t("by") . " " . $lockerUsername;
-    }
-
-    protected function currentUserIsTheOriginalLocker($owner)
-    {
-        return $owner === User::getCurrentUserName();
-    }
-
-    protected function getFilePath($id)
-    {
-        $query = "SELECT path FROM *PREFIX*" . "filecache" . " WHERE fileid = ?";
-
-        $filePath = \OCP\DB::prepare($query)
-            ->execute(array($id))
-            ->fetchAll();
-
-        return $filePath;
-    }
-
-    /**
-     * Check if locked from all parents above.
-     *
-     * @param $file
-     * @return mixed|null
-     */
-    protected function checkFromAll($file) {
-        $currentPath = Path::removeLastDirectory($file);
-
-        while ($currentPath) {
-            $hasLock = Database::getFileLock($currentPath);
-
-            if ($hasLock != null) {
-                return $hasLock;
-            }
-
-            $currentPath = Path::removeLastDirectory($currentPath);
-        }
-
-        return null;
-    }
-
-    /**
-     * Check if the current file is locked from direct parent directory only.
-     * Only if it is a file (directories not allowed).
-     *
-     * @param $file
-     * @param $fileType
-     * @return mixed
-     */
-    protected function checkFromParent($file, $fileType) {
-        if ($fileType !== 'file') {
-            return null;
-        }
-
-        $currentPath = Path::removeLastDirectory($file);
-
-        return Database::getFileLock($currentPath);
-    }
-
-    protected function fileIsGroupFolder($fileData, $lockFile)
-    {
-        // if lockfile is group folder than it's value is something like: local::/var/www/...//__groupfolders/id
-        $pathSteps = explode("/", $lockFile);
-        $length = count($pathSteps);
-
-        $notOrdinaryFolder = is_numeric($pathSteps[$length - 1]) && $pathSteps[$length - 2] === '__groupfolders';
-
-        $isGroupFolder = $fileData['mountType'] === 'group' && $notOrdinaryFolder;
-
-        return $fileData['fileType'] === 'dir' && $isGroupFolder;
-    }
-
-    protected function lock($lockfile, $lockedby_name, $fileId)
-    {
-        Database::lockFile($lockfile, $lockedby_name);
-
-        $lockerUserDisplayName = User::getDisplayName($lockedby_name);
-
-        Event::emit('lock', $fileId, $lockerUserDisplayName);
-    }
-
-    protected function unlock($lockfile, $lockedby_name, $fileId)
-    {
-        Database::unlockFile($lockfile);
-
-        $lockerUserDisplayName = User::getDisplayName($lockedby_name);
-
-        Event::emit('unlock', $fileId, $lockerUserDisplayName);
-    }
+//    protected function fileFromGroupFolder($mountType)
+//    {
+//        return $mountType === 'group';
+//    }
+//
+//    protected function fileIsGroupFolder($fileData, $lockFile)
+//    {
+//        // if lockfile is group folder than it's value is something like: local::/var/www/...//__groupfolders/id
+//        $pathSteps = explode("/", $lockFile);
+//        $length = count($pathSteps);
+//
+//        $notOrdinaryFolder = is_numeric($pathSteps[$length - 1]) && $pathSteps[$length - 2] === '__groupfolders';
+//
+//        $isGroupFolder = $fileData['mountType'] === 'group' && $notOrdinaryFolder;
+//
+//        return $fileData['fileType'] === 'dir' && $isGroupFolder;
+//    }
 }
