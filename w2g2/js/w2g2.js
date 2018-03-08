@@ -5,13 +5,12 @@
     var fileBeingActedUponId = '';
     var directoryLock = '';
     var url = OC.filePath('w2g2', 'ajax', 'w2g2.php');
+    var lockstate = t('w2g2', 'Locked');
 
     $(document).ready(function () {
         getBackgroundColor();
         getFontColor();
         getDirectoryLockStatus();
-
-        lockstate = t('w2g2', 'Locked');
 
         if (typeof FileActions !== 'undefined' && $('#dir').length > 0) {
             OCA.Files.fileActions.registerAction({
@@ -114,6 +113,9 @@
 
         // Set the current file as being acted upon to block any future action until the current one is finished.
         fileBeingActedUponId = id;
+
+        // Show 'loading' message on the UI
+        showLoading(fileName);
 
         var data = {
             path: escapeHTML(oc_path),
@@ -251,6 +253,28 @@
         updateFileUI(fileName, data);
 
         fileBeingActedUponId = '';
+    }
+
+    function showLoading(fileName) {
+        fileName = fileName.replace(/%20/g, ' ');
+
+        var html = '<img class="svg" src="' + OC.imagePath('w2g2', 'loading.png') + '"></img>' + '<span> In progress </span>';
+
+        $('tr').filterAttr('data-file', fileName)
+            .find('td.filename')
+            .find('a.name')
+            .find('span.fileactions')
+            .find("a.action")
+            .filterAttr('data-action', 'getstate_w2g')
+            .html(html);
+
+        $('tr').filterAttr('data-file', fileName)
+            .find('td.filename')
+            .find('a.namelock')
+            .find('span.fileactions')
+            .find("a.action")
+            .filterAttr('data-action', 'getstate_w2g')
+            .html(html);
     }
 
     function removeLinksFromLockedDirectories() {
