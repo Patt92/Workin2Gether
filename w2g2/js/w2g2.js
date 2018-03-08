@@ -68,7 +68,8 @@
     }
 
     //Switch the Lockstate
-    function toggle_control(filename) {
+    function toggle_control(fileName) {
+        var fileNameEncoded = escapeHTML(fileName);
         $(".ignore-click").unbind("click");
 
         //Walk through the Filelists
@@ -77,7 +78,7 @@
             var $_tr = $tr.html().replace(/^\s+|\s+$/g, '').replace('<span class="extension">', '').split('</span>').join('');
             var actionname = 'getstate_w2g';
 
-            if ($_tr.indexOf(filename) != -1) {
+            if ($_tr.indexOf(fileNameEncoded) != -1) {
                 if ($_tr.indexOf(lockstate) == -1) {
                     unlock($tr, actionname);
                 }
