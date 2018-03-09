@@ -6,16 +6,19 @@ namespace OCA\w2g2;
 \OCP\JSON::checkLoggedIn();
 \OCP\JSON::callCheck();
 
-switch($_POST['action'])
-{
+switch($_POST['action']) {
     case 'clearall':
-        \OC::$server->getDatabaseConnection()->prepare("TRUNCATE *PREFIX*".app::table)->execute();
+        \OC::$server->getDatabaseConnection()
+            ->prepare("TRUNCATE *PREFIX*".app::table)
+            ->execute();
+
         echo "clear";
+
         break;
 
     case 'clearthis':
         \OC::$server->getDatabaseConnection()
-            ->prepare("DELETE FROM *PREFIX*".app::table." WHERE name=?")
+            ->prepare("DELETE FROM *PREFIX*".app::table." WHERE file_id=?")
             ->execute(array($_POST['lock']));
 
         echo "clear";
