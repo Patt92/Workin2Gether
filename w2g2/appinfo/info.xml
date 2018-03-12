@@ -7,13 +7,14 @@
 	<summary>Visual locking of files and folders to contribute to a better collaboration</summary>
 	<description>
 		<![CDATA[Nextcloud plugin that allows the users to lock files and folders.
-	It works with files and folders owned by the user, shared by another user or inside a group folder.
+		It works with files and folders owned by the user, shared by another user or inside a group folder.
 
-	This is a fork from the Working2gether app, with enhancements.
-	]]></description>
+		This is a fork from the Working2gether app, with enhancements.
+		]]>
+	</description>
 	<licence>AGPL</licence>
 	<author>Ionut Orzu</author>
-	<version>1.0.1</version>
+	<version>1.1.0</version>
 	<category>social</category>
 	<category>files</category>
 
@@ -40,4 +41,10 @@
 			<provider>OCA\w2g2\Activity\Provider</provider>
 		</providers>
 	</activity>
+
+	<repair-steps>
+		<post-migration>
+			<step>OCA\w2g2\Migration\UpdateDatabase</step>
+		</post-migration>
+	</repair-steps>
 </info>
