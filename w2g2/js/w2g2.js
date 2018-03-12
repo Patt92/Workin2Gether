@@ -29,46 +29,43 @@
                 }
             });
 
-            initialLockStateCheck();
+            filesLockStateCheck();
         }
 
         buildCSS();
     });
 
-    function initialLockStateCheck() {
+    function filesLockStateCheck() {
         var files = [];
-        var alreadyChecked = [];
 
         //Walk through all files in the active Filelist
         $('#content').delegate('#fileList', 'fileActionsReady', function (event) {
-            var $fileList = event.fileList.$fileList;
+            for (var i = 0; i < event.$files.length; i++) {
+                var file = event.$files[i][0];
+                var $file = $(file);
 
-            $fileList.find('tr').each(function () {
-                var id = $(this).context.dataset.id;
-
-                // Check if this resource (file, directory) was already check if locked or not
-                if (alreadyChecked.indexOf(id) === -1) {
-                    alreadyChecked.push(id);
-
+                if ($file && $file.hasOwnProperty('context')) {
                     files.push([
-                        $(this).attr('data-id'),
-                        $(this).attr('data-file'),
-                        $(this).attr('data-share-owner'),
+                        $file.attr('data-id'),
+                        $file.attr('data-file'),
+                        $file.attr('data-share-owner'),
                         '',
-                        $(this).attr('data-mounttype'),
-                        $(this).attr('data-type')
+                        $file.attr('data-mounttype'),
+                        $file.attr('data-type')
                     ]);
                 }
-            });
+            }
 
-            getStateForAllFiles(files, "true", directoryLock);
+            if (files.length > 0) {
+                getLockStateForFiles(files);
 
-            files = [];
+                files = [];
+            }
         });
     }
 
     //Switch the Lockstate
-    function toggle_control(fileName) {
+    function toggleState(fileName) {
         var fileNameEncoded = escapeHTML(fileName);
         $(".ignore-click").unbind("click");
 
@@ -97,12 +94,16 @@
         removeLinksFromLockedDirectories();
     }
 
-    //Get the current state
+    /**
+     * Toggle the 'lock' state for the given file.
+     *
+     * @param fileName
+     * @param $file
+     */
     function toggleLock(fileName, $file) {
         var id = $file.attr('data-id');
         var fileType = $file.attr('data-type');
         var owner = $file.attr('data-share-owner');
-        var safe =  "false";
         var mountType = $file.attr('data-mounttype');
 
         // Block any 'lock' or 'unlock' actions on this file until the current one is finished.
@@ -126,7 +127,6 @@
 
         var data = {
             path: escapeHTML(oc_path),
-            safe: safe,
             owner: owner ? owner : '',
             id: id,
             mountType: mountType ? mountType : '',
@@ -143,7 +143,12 @@
         });
     }
 
-    function getStateForAllFiles(files, _safe, directoryLock) {
+    /**
+     * Check the 'lock' state of the given files.
+     *
+     * @param files
+     */
+    function getLockStateForFiles(files) {
         oc_dir = $('#dir').val();
 
         if (oc_dir !== '/') {
@@ -160,12 +165,12 @@
             type: "post",
             data: data,
             success: function (data) {
-                updateAllFilesUI(data, directoryLock);
+                updateAllFilesUI(data);
             },
         });
     }
 
-    function updateAllFilesUI(files, directoryLock) {
+    function updateAllFilesUI(files) {
         files = JSON.parse(files);
 
         for (var i = 0; i < files.length; i++) {
@@ -177,10 +182,18 @@
             //     return;
             // }
 
+
+
             updateFileUI(fileName, message);
         }
     }
 
+    /**
+     * Display the 'lock' status on the page.
+     *
+     * @param fileName
+     * @param message
+     */
     function updateFileUI(fileName, message) {
         fileName = fileName.replace(/%20/g, ' ');
 
@@ -203,10 +216,16 @@
             .html(html);
 
         if ( ! message.includes(t('w2g2', 'No permission'))) {
-            toggle_control(fileName);
+            toggleState(fileName);
         }
     }
 
+    /**
+     * Unlock the file on the page.
+     *
+     * @param $tr
+     * @param actionname
+     */
     function unlock($tr, actionname) {
         $tr.find('a.action[data-action!=' + actionname + ']').removeClass('locked');
         $tr.find('a.action[data-action!=' + actionname + ']').addClass('permanent');
@@ -226,6 +245,12 @@
         $tr.find('a.statelock').addClass('name');
     }
 
+    /**
+     * Lock the file on the page.
+     *
+     * @param $tr
+     * @param actionname
+     */
     function lock($tr, actionname) {
         $tr.find('a.permanent[data-action!=' + actionname + ']').removeClass('permanent');
 
