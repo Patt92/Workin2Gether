@@ -20,11 +20,42 @@ db_fetcher($directoryLocking, "directory_locking");
 
 //Locked files
 if (\OC::$server->getDatabaseConnection()->tableExists(app::table)) {
-    $query = "SELECT f.path, f.fileid FROM *PREFIX*" . app::table . " AS l JOIN *PREFIX*" . 'filecache' . " as f ON l.file_id = f.fileid";
+    $query = "SELECT f.path, f.fileid, l.locked_by FROM *PREFIX*" . app::table . " AS l JOIN *PREFIX*" . 'filecache' . " as f ON l.file_id = f.fileid";
 
     $lockedFiles = \OCP\DB::prepare($query)
         ->execute()
         ->fetchAll();
+
+    $groupFolderName = "__groupfolders/";
+    $fileName = 'files/';
+    $groupFolderQuery = "SELECT mount_point FROM *PREFIX*" . 'group_folders' . " WHERE folder_id=?";
+
+    for ($i = 0; $i < count($lockedFiles); $i++) {
+        $groupFolderIndex = strpos($lockedFiles[$i]['path'], $groupFolderName);
+        $fileIndex = strpos($lockedFiles[$i]['path'], $fileName);
+
+        if ($groupFolderIndex === 0) {
+            $path = substr($lockedFiles[$i]['path'], strlen($groupFolderName));
+
+            $slashIndex = strpos($path, '/');
+
+            $groupFolderId = substr($path, 0, $slashIndex);
+            $file = substr($path, $slashIndex + 1);
+
+            $result = \OCP\DB::prepare($groupFolderQuery)
+                ->execute([$groupFolderId])
+                ->fetchAll();
+
+            if ($result && count($result) > 0) {
+                $path = $result[0]['mount_point'];
+
+                $lockedFiles[$i]['path'] = $path . '/' . $file;
+            }
+        } else if ($fileIndex === 0) {
+            $filePath = substr($lockedFiles[$i]['path'], strlen('files/'));
+            $lockedFiles[$i]['path'] = $lockedFiles[$i]['locked_by'] . '/' . $filePath;
+        }
+    }
 }
 
 \OCP\Util::addscript(app::name, 'admin');
@@ -53,7 +84,7 @@ if (\OC::$server->getDatabaseConnection()->tableExists(app::table)) {
         if (count($lockedFiles) > 0) {
             echo '<div id="lockfield"><u>' . $l->t("Locked files") . ':</u><br>
 
-            <select size="6" style="height:100px;" id="select_lock">';
+            <select size="6" style="height:100px; min-width: 400px;" id="select_lock">';
             for ($i = 0; $i < count($lockedFiles); $i++)
                 echo '<option value="' . $lockedFiles[$i]['fileid'] . '">' . rtrim($lockedFiles[$i]['path'], '/') . '</option>';
             echo '
