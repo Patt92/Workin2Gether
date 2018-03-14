@@ -80,10 +80,19 @@ class UpdateDatabase implements IRepairStep
                         ->execute([$fileName])
                         ->fetchAll();
 
-                    $files[] = [
-                        'id' => $result[0]['fileid'],
-                        'locked_by' => $lock['locked_by']
-                    ];
+                    // Check if the file with the given path exits.
+                    if (
+                        $result &&
+                        is_array($result) &&
+                        count($result) > 0 &&
+                        array_key_exists('fileid', $result[0]) &&
+                        $result[0]['fileid']
+                    ) {
+                        $files[] = [
+                            'id' => $result[0]['fileid'],
+                            'locked_by' => $lock['locked_by']
+                        ];
+                    }
                 }
             }
 
