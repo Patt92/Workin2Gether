@@ -41,10 +41,4 @@
 			<provider>OCA\w2g2\Activity\Provider</provider>
 		</providers>
 	</activity>
-
-	<repair-steps>
-		<post-migration>
-			<step>OCA\w2g2\Migration\UpdateDatabase</step>
-		</post-migration>
-	</repair-steps>
 </info>

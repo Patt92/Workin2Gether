@@ -2,43 +2,24 @@
 
 namespace OCA\w2g2\Migration;
 
-use OCP\Migration\IOutput;
-use OCP\Migration\IRepairStep;
-use OCP\ILogger;
-
-class UpdateDatabase implements IRepairStep
+class UpdateDatabase
 {
-    protected $logger;
     protected $tableName;
 
-    public function __construct(ILogger $logger)
+    public function __construct()
     {
-        $this->logger = $logger;
-
         $this->tableName = "oc_locks_w2g2";
     }
 
-    /**
-     * Returns the step's name
-     */
-    public function getName()
+    public function run()
     {
-        return 'Update the table in the database!';
-    }
-
-    public function run(IOutput $output)
-    {
-        $this->logger->info("Updating w2g2!", ["app" => "w2g2"]);
-
         if ( ! $this->shouldUpdate()) {
-            $this->logger->info("No need to update the database.", ["app" => "w2g2"]);
-
             return;
         }
 
-        $this->logger->info("Updating the table!", ["app" => "w2g2"]);
-
         $this->update();
+
+        return 'done';
     }
 
     protected function shouldUpdate()

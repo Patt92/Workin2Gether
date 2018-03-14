@@ -5,11 +5,14 @@
     var fileBeingActedUponId = '';
     var directoryLock = '';
     var url = OC.filePath('w2g2', 'ajax', 'w2g2.php');
+    var updateDatabaseURL = OC.filePath('w2g2', 'ajax', 'updateDatabase.php');
     var checkStateUrl = OC.filePath('w2g2', 'ajax', 'checkState.php');
     var directoryLockUrl = OC.filePath('w2g2', 'ajax', 'directoryLock.php');
     var lockstate = t('w2g2', 'Locked');
 
     $(document).ready(function () {
+        attemptUpdateDatabase();
+
         getBackgroundColor();
         getFontColor();
         getDirectoryLockStatus();
@@ -362,6 +365,16 @@
             "a.w2g_active{color:#" + fontcolor + " !important;display:inline !important;opacity:1.0 !important;}" +
             "a.w2g_active:hover{color:#fff !important;}" +
             "a.namelock,a.namelock span.extension {color:#" + fontcolor + ";opacity:1.0!important;padding: 0 !important;}");
+    }
+
+    function attemptUpdateDatabase() {
+        $.ajax({
+            url: updateDatabaseURL,
+            type: "post",
+            data: {},
+            async: false,
+            success: function (data) {},
+        });
     }
 
 })($, window, document);

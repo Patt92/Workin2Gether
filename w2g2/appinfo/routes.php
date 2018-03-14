@@ -8,6 +8,9 @@ $this->create('w2g2_ajax_getcolor', 'ajax/getcolor.php')
 $this->create('w2g2_ajax_core', 'ajax/w2g2.php')
     ->actionInclude('w2g2/ajax/w2g2.php');
 
+$this->create('w2g2_ajax_updateDatabase', 'ajax/updateDatabase.php')
+    ->actionInclude('w2g2/ajax/updateDatabase.php');
+
 $this->create('w2g2_ajax_checkState', 'ajax/checkState.php')
     ->actionInclude('w2g2/ajax/checkState.php');
 
