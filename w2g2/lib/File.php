@@ -2,8 +2,7 @@
 
 namespace OCA\w2g2;
 
-class File
-{
+class File {
     protected $fileId;
     protected $lock;
     protected $groupFolderFileId;

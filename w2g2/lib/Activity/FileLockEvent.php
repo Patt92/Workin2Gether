@@ -12,9 +12,9 @@ class FileLockEvent extends Event {
     protected $fileId;
     protected $lockerUser;
 
-    public function __construct($event, $fileId, $lockerUser)
+    public function __construct($eventType, $fileId, $lockerUser)
     {
-        $this->event = $event;
+        $this->event = $eventType;
         $this->fileId = $fileId;
         $this->lockerUser = $lockerUser;
     }

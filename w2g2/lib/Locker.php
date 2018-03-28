@@ -41,13 +41,13 @@ class Locker
         $file = new File($this->fileData['id']);
 
         if ($file->isLocked()) {
-            return $this->attemptUnlock($file);
-        } else {
-            return $this->lock($file);
+            return $this->unlock($file);
         }
+
+        return $this->lock($file);
     }
 
-    protected function attemptUnlock($file)
+    protected function unlock($file)
     {
         if ($file->canBeUnlockedBy(User::getCurrentUserName())) {
             $file->unlock();
@@ -68,22 +68,4 @@ class Locker
 
         return $this->uiMessage->getLocked(User::getCurrentUserName());
     }
-
-//    protected function fileFromGroupFolder($mountType)
-//    {
-//        return $mountType === 'group';
-//    }
-//
-//    protected function fileIsGroupFolder($fileData, $lockFile)
-//    {
-//        // if lockfile is group folder than it's value is something like: local::/var/www/...//__groupfolders/id
-//        $pathSteps = explode("/", $lockFile);
-//        $length = count($pathSteps);
-//
-//        $notOrdinaryFolder = is_numeric($pathSteps[$length - 1]) && $pathSteps[$length - 2] === '__groupfolders';
-//
-//        $isGroupFolder = $fileData['mountType'] === 'group' && $notOrdinaryFolder;
-//
-//        return $fileData['fileType'] === 'dir' && $isGroupFolder;
-//    }
 }

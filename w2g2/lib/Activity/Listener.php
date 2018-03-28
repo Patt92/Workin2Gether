@@ -4,27 +4,26 @@ namespace OCA\w2g2\Activity;
 
 use OCP\Activity\IManager;
 use OCP\App\IAppManager;
-use OCP\Files\Config\IMountProviderCollection;
-use OCP\Files\IRootFolder;
 use OCP\Files\Node;
 use OCP\IUser;
 use OCP\IUserSession;
 use OCP\Share;
-use OCP\Share\IShareHelper;
+use OCP\Files\Config\ICachedMountFileInfo;
+use OCP\Files\Config\ICachedMountInfo;
+use OCP\Files\Config\IUserMountCache;
 
 class Listener {
     /** @var IManager */
     protected $activityManager;
+
     /** @var IUserSession */
     protected $session;
+
     /** @var \OCP\App\IAppManager */
     protected $appManager;
-    /** @var \OCP\Files\Config\IMountProviderCollection */
-    protected $mountCollection;
-    /** @var \OCP\Files\IRootFolder */
-    protected $rootFolder;
-    /** @var IShareHelper */
-    protected $shareHelper;
+
+    /** @var IUserMountCache  */
+    protected $userMountCache;
 
     /**
      * Listener constructor.
@@ -32,57 +31,39 @@ class Listener {
      * @param IManager $activityManager
      * @param IUserSession $session
      * @param IAppManager $appManager
-     * @param IMountProviderCollection $mountCollection
-     * @param IRootFolder $rootFolder
-     * @param IShareHelper $shareHelper
+     * @param IUserMountCache $userMountCache
      */
     public function __construct(IManager $activityManager,
                                 IUserSession $session,
                                 IAppManager $appManager,
-                                IMountProviderCollection $mountCollection,
-                                IRootFolder $rootFolder,
-                                IShareHelper $shareHelper) {
+                                IUserMountCache $userMountCache) {
         $this->activityManager = $activityManager;
         $this->session = $session;
         $this->appManager = $appManager;
-        $this->mountCollection = $mountCollection;
-        $this->rootFolder = $rootFolder;
-        $this->shareHelper = $shareHelper;
+        $this->userMountCache = $userMountCache;
     }
 
+    /**
+     * Generate the event and dispatch it.
+     *
+     * @param FileLockEvent $event
+     */
     public function fileLockEvent(FileLockEvent $event) {
         if ( ! $this->appManager->isInstalled('w2g2')) {
             return;
         }
 
-        // Get all mount point owners
-        $cache = $this->mountCollection->getMountCache();
-        $mounts = $cache->getMountsForFileId((int)$event->getFileId());
+        $mountsForFile = $this->getMountsForFile($event);
 
-        if (empty($mounts)) {
+        if ( ! $mountsForFile || count($mountsForFile) === 0) {
             return;
         }
 
-        $users = [];
-        foreach ($mounts as $mount) {
-            $owner = $mount->getUser()->getUID();
-            $ownerFolder = $this->rootFolder->getUserFolder($owner);
-            $nodes = $ownerFolder->getById((int)$event->getFileId());
+        $userIds = $this->getAffectedUserIds($mountsForFile);
 
-            if ( ! empty($nodes)) {
-                /** @var Node $node */
-                $node = array_shift($nodes);
-                $al = $this->shareHelper->getPathsForAccessList($node);
-                $users = array_merge($users, $al['users']);
-            }
-        }
+        $paths = $this->getAffectedPaths($mountsForFile);
 
-        $actor = $this->session->getUser();
-        if ($actor instanceof IUser) {
-            $actor = $actor->getUID();
-        } else {
-            $actor = '';
-        }
+        $actor = $this->getActor();
 
         $activity = $this->activityManager->generateEvent();
         $activity->setApp('w2g2')
@@ -93,16 +74,73 @@ class Listener {
                 'fileId' => $event->getFileId(),
             ]);
 
-        foreach ($users as $user => $path) {
-            $activity->setAffectedUser($user);
+        for ($i = 0; $i < count($userIds); $i++) {
+            $activity->setAffectedUser($userIds[$i]);
 
             $activity->setSubject($event->getEvent(), [
                 'actor' => $actor,
                 'fileId' => (int) $event->getFileId(),
-                'filePath' => trim($path, '/'),
+                'filePath' => trim($paths[$i], '/'),
             ]);
 
             $this->activityManager->publish($activity);
         }
+    }
+
+    /**
+     * Get all mounts associated with the file acted upon.
+     *
+     * @param FileLockEvent $event
+     * @return mixed
+     */
+    protected function getMountsForFile(FileLockEvent $event)
+    {
+        return $this->userMountCache->getMountsForFileId((int)$event->getFileId());
+    }
+
+    /**
+     * Get all users that own the mounts associated with the file acted upon.
+     *
+     * @param array $mountsForFile
+     * @return array
+     */
+    protected function getAffectedUserIds(array $mountsForFile)
+    {
+        $affectedUserIds = array_map(function (ICachedMountInfo $mount) {
+            return $mount->getUser()->getUID();
+        }, $mountsForFile);
+
+        return array_values($affectedUserIds);
+    }
+
+    /**
+     * Get all file paths for the mounts associated with the file acted upon.
+     *
+     * @param array $mountsForFile
+     * @return array
+     */
+    protected function getAffectedPaths(array $mountsForFile)
+    {
+        $affectedPaths =  array_map(function (ICachedMountFileInfo $mount) {
+            return $mount->getPath();
+        }, $mountsForFile);
+
+        return array_values($affectedPaths);
+    }
+
+    /**
+     * Get the user that acted upon the file.
+     *
+     * @return string
+     */
+    protected function getActor()
+    {
+        $actor = $this->session->getUser();
+
+        if ($actor instanceof IUser) {
+            return $actor->getUID();
+        }
+
+        return '';
     }
 }
