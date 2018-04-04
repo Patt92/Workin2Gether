@@ -5,7 +5,7 @@ namespace OCA\w2g2\Notification;
 use OCP\IUserManager;
 use OCP\Notification\IManager;
 use OCA\w2g2\Activity\FileLockEvent;
-use OCA\w2g2\Database;
+use OCA\w2g2\Db\FavoriteMapper;
 
 class Listener {
     /** @var IManager */
@@ -20,27 +20,17 @@ class Listener {
      * @param IManager $notificationManager
      * @param IUserManager $userManager
      */
-    public function __construct(
-        IManager $notificationManager,
-        IUserManager $userManager
-    ) {
+    public function __construct(IManager $notificationManager, IUserManager $userManager)
+    {
         $this->notificationManager = $notificationManager;
         $this->userManager = $userManager;
     }
 
-    public function handle(FileLockEvent $event) {
+    public function handle(FileLockEvent $event)
+    {
         $fileId = $event->getFileId();
 
-        $categoriesResult = Database::getCategoriesForFile($fileId);
-
-        $usersIds = [];
-        foreach ($categoriesResult as $category) {
-            $result = Database::getFavoriteByCategoryId($category["categoryid"]);
-
-            if (count($result) > 0) {
-                $usersIds[] = $result[0]["uid"];
-            }
-        }
+        $usersIds = FavoriteMapper::getUsersForFile($fileId);
 
         // No user favorited the locked file, don't send any notifications.
         if (count($usersIds) <= 0) {
@@ -59,7 +49,8 @@ class Listener {
         }
     }
 
-    public function instantiateNotification($fileId, $lockerUser, $eventType) {
+    public function instantiateNotification($fileId, $lockerUser, $eventType)
+    {
         $notification = $this->notificationManager->createNotification();
 
         $notification

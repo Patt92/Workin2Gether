@@ -1,10 +1,13 @@
 $(document).ready(function(){
 
+    var $lockUrl = OC.generateUrl('/apps/w2g2/lock');
+    var $updateUrl = OC.generateUrl('/apps/w2g2/update');
+
     $('#submitColor').click(function(){
         $.ajax({
-            url: OC.filePath('w2g2','ajax','update.php'),
+            url: $updateUrl,
             type: "post",
-            data: { mode: 'color', value: $('#multicolor').val()},
+            data: { type: 'color', value: $('#multicolor').val()},
             async: false,
             success: function(data){text = data;},
         });
@@ -13,9 +16,9 @@ $(document).ready(function(){
 
     $('#submitfontcolor').click(function(){
         $.ajax({
-            url: OC.filePath('w2g2','ajax','update.php'),
+            url: $updateUrl,
             type: "post",
-            data: { mode: 'fontcolor', value: $('#multifontcolor').val()},
+            data: { type: 'fontcolor', value: $('#multifontcolor').val()},
             async: false,
             success: function(data){text = data;},
         });
@@ -24,37 +27,53 @@ $(document).ready(function(){
 
     $('input:radio[name="suffix"]').change(function(){
         $.ajax({
-            url: OC.filePath('w2g2','ajax','update.php'),
+            url: $updateUrl,
             type: "post",
-            data: { mode: 'suffix', value: $("input:radio[name='suffix']:checked").attr('id')},
+            data: { type: 'suffix', value: $("input:radio[name='suffix']:checked").attr('id')},
             async: false,
             success: function(data){},
         });
     });
 
     $('#clearall').click(function(){
+        var data = {
+            action: 'all'
+        };
+
         $.ajax({
-            url: OC.filePath('w2g2','ajax','admin_db.php'),
-            type: "post",
-            data: { action: 'clearall'},
+            url: $lockUrl,
+            type: "delete",
+            data: data,
             async: false,
-            success: function(data){
-                if(data=="clear") $('#lockfield').html(t("workin2gether","There are no locked files at the moment"));},
+            success: function(data) {
+                $('#lockfield').html(t("w2g2", "There are no locked files at the moment"));
+            }
         });
     });
 
     $('#clearthis').click(function(){
+        var lockFile = $('#select_lock option:selected').val();
+
+        if ( ! lockFile) {
+            return;
+        }
+        
+        var data =  {
+            action: 'one',
+            lockedFileId: lockFile
+        };
+
         $.ajax({
-            url: OC.filePath('w2g2','ajax','admin_db.php'),
-            type: "post",
-            data: { action: 'clearthis',lock: $('#select_lock option:selected').val()},
+            url: $lockUrl,
+            type: "delete",
+            data: data,
             async: false,
             success: function(data){
-                if(data=="clear") $('#select_lock option:selected').remove();
+                $('#select_lock option:selected').remove();
 
-                if($.trim($('#select_lock').html())=="")
-                    $('#lockfield').html(t("workin2gether","There are no locked files at the moment"));
-
+                if ($.trim($('#select_lock').html()) == "") {
+                    $('#lockfield').html(t("w2g2", "There are no locked files at the moment"));
+                }
             },
         });
     });
@@ -64,10 +83,10 @@ $(document).ready(function(){
     });
 
     $('#w2g_lock_permission_extended').click(function(){
-        extended_checked = $('#w2g_lock_permission_extended').attr('checked')? 1 : 0;
+        var extended_checked = $('#w2g_lock_permission_extended').attr('checked') ? 1 : 0;
 
         $.ajax({
-            url: OC.filePath('w2g2','ajax','update.php'),
+            url: $updateUrl,
             type: "post",
             data: { mode: 'extended',value: extended_checked },
             async: false,
@@ -78,9 +97,9 @@ $(document).ready(function(){
     // Directory locking
     $('input:radio[name="directory_locking"]').change(function() {
         $.ajax({
-            url: OC.filePath('w2g2','ajax','update.php'),
+            url: $updateUrl,
             type: "post",
-            data: { mode: 'directory_locking', value: $("input:radio[name='directory_locking']:checked").attr('id')},
+            data: { type: 'directory_locking', value: $("input:radio[name='directory_locking']:checked").attr('id')},
             async: false,
             success: function(data){},
         });

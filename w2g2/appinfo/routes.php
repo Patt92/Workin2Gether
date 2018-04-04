@@ -1,27 +1,44 @@
 <?php
 
-namespace OCA\w2g2\AppInfo;
+return [
+    'routes' => [
+        // Config
+        [
+            'name' => 'config#get_color',
+            'url' => '/color',
+            'verb' => 'GET'
+        ],
+        [
+            'name' => 'config#directory_lock',
+            'url' => '/directory-lock',
+            'verb' => 'GET'
+        ],
+        [
+            'name' => 'config#update_database',
+            'url' => '/update-database',
+            'verb' => 'POST'
+        ],
+        [
+            'name' => 'config#update',
+            'url' => '/update',
+            'verb' => 'POST'
+        ],
 
-$this->create('w2g2_ajax_getcolor', 'ajax/getcolor.php')
-    ->actionInclude('w2g2/ajax/getcolor.php');
-
-$this->create('w2g2_ajax_core', 'ajax/w2g2.php')
-    ->actionInclude('w2g2/ajax/w2g2.php');
-
-$this->create('w2g2_ajax_updateDatabase', 'ajax/updateDatabase.php')
-    ->actionInclude('w2g2/ajax/updateDatabase.php');
-
-$this->create('w2g2_ajax_checkState', 'ajax/checkState.php')
-    ->actionInclude('w2g2/ajax/checkState.php');
-
-$this->create('w2g2_ajax_update', 'ajax/update.php')
-    ->actionInclude('w2g2/ajax/update.php');
-
-$this->create('w2g2_ajax_admin_db', 'ajax/admin_db.php')
-    ->actionInclude('w2g2/ajax/admin_db.php');
-
-$this->create('w2g2_admin', 'admin.php')
-    ->actionInclude('w2g2/admin.php');
-
-$this->create('w2g2_ajax_directoryLock', 'ajax/directoryLock.php')
-    ->actionInclude('w2g2/ajax/directoryLock.php');
+        // Lock
+        [
+            'name' => 'lock#index',
+            'url' => '/lock',
+            'verb' => 'GET'
+        ],
+        [
+            'name' => 'lock#store',
+            'url' => '/lock',
+            'verb' => 'POST'
+        ],
+        [
+            'name' => 'lock#delete',
+            'url' => '/lock',
+            'verb' => 'DELETE'
+        ],
+    ]
+];

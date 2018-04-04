@@ -1,0 +1,38 @@
+<database xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/database.xsd">
+    <name>*dbname*</name>
+
+    <create>true</create>
+    <overwrite>false</overwrite>
+
+    <charset>utf8</charset>
+
+    <table>
+        <name>*dbprefix*locks_w2g2</name>
+
+        <declaration>
+            <field>
+                <name>file_id</name>
+                <type>integer</type>
+                <length>8</length>
+                <unsigned>true</unsigned>
+                <notnull>true</notnull>
+                <autoincrement>false</autoincrement>
+                <primary>true</primary>
+            </field>
+
+            <field>
+                <name>locked_by</name>
+                <type>text</type>
+                <length>255</length>
+                <notnull>true</notnull>
+            </field>
+
+            <field>
+                <name>created</name>
+                <type>timestamp</type>
+                <default>CURRENT_TIMESTAMP</default>
+            </field>
+        </declaration>
+    </table>
+</database>

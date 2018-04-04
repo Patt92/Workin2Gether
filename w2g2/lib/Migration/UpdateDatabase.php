@@ -2,13 +2,16 @@
 
 namespace OCA\w2g2\Migration;
 
-class UpdateDatabase
-{
-    protected $tableName;
+use OCP\IDbConnection;
 
-    public function __construct()
+class UpdateDatabase {
+    protected $tableName;
+    protected $db;
+
+    public function __construct(IDbConnection $dbConnection)
     {
         $this->tableName = "oc_locks_w2g2";
+        $this->db = $dbConnection;
     }
 
     public function run()
@@ -24,12 +27,11 @@ class UpdateDatabase
 
     protected function shouldUpdate()
     {
-        $updateCheckQuery = "SELECT column_name
+        $query = "SELECT column_name
                   FROM information_schema.columns
                   WHERE table_name = '" . $this->tableName . "' and column_name = 'name'";
 
-        $result = \OCP\DB::prepare($updateCheckQuery)
-            ->execute()
+        $result = $this->db->executeQuery($query)
             ->fetchAll();
 
         return is_array($result) && count($result) > 0;
@@ -39,8 +41,7 @@ class UpdateDatabase
     {
         $locksQuery = "SELECT * FROM " . $this->tableName;
 
-        $locks = \OCP\DB::prepare($locksQuery)
-            ->execute()
+        $locks = $this->db->executeQuery($locksQuery)
             ->fetchAll();
 
         $files = [];
@@ -57,8 +58,7 @@ class UpdateDatabase
                 if ($index) {
                     $fileName = substr($lock['name'], $index);
 
-                    $result = \OCP\DB::prepare($fileCacheQuery)
-                        ->execute([$fileName])
+                    $result = $this->db->executeQuery($fileCacheQuery, [$fileName])
                         ->fetchAll();
 
                     // Check if the file with the given path exits.
@@ -78,14 +78,15 @@ class UpdateDatabase
             }
 
             $deleteQuery = "DELETE FROM " . $this->tableName;
-            \OCP\DB::prepare($deleteQuery)->execute();
+
+            $this->db->executeQuery($deleteQuery);
         }
 
         $renameQuery = "ALTER TABLE " . $this->tableName . " RENAME COLUMN name TO file_id";
         $typeQuery = "ALTER TABLE " . $this->tableName . " ALTER COLUMN file_id TYPE INT USING file_id::integer";
 
-        \OCP\DB::prepare($renameQuery)->execute();
-        \OCP\DB::prepare($typeQuery)->execute();
+        $this->db->executeQuery($renameQuery);
+        $this->db->executeQuery($typeQuery);
 
         // Add the data back in the table
         if (count($files) > 0) {
@@ -101,7 +102,7 @@ class UpdateDatabase
                 }
             }
 
-            \OCP\DB::prepare($insertQuery)->execute();
+            $this->db->executeQuery($insertQuery);
         }
     }
 }

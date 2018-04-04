@@ -2,21 +2,24 @@
 
 namespace OCA\w2g2;
 
+use OCA\w2g2\Service\UserService;
+use OCA\w2g2\Db\ConfigMapper;
+
 class UIMessage
 {
-    protected $naming = "";
+    protected $userNameRule;
     protected $l;
 
     public function __construct()
     {
-        Database::fetch($this->naming, 'suffix', "rule_username");
-
+        $this->userNameRule = ConfigMapper::getLockingByNameRule();
+        
         $this->l = \OCP\Util::getL10N('w2g2');
     }
 
     public function getLocked($locker)
     {
-        $locker = $this->naming === "rule_displayname" ? User::getDisplayName($locker) : $locker;
+        $locker = $this->userNameRule === "rule_username" ? $locker : UserService::getDisplayName($locker);
 
         return " " . $this->l->t("Locked by") . " " . $locker;
     }
@@ -28,6 +31,16 @@ class UIMessage
 
     public function getUnlocked()
     {
-        return " Unlocked.";
+        return " " . $this->l->t("Unlocked");
+    }
+
+    public function getDirectoryLockingNone()
+    {
+        return " " . $this->l->t("Directories locking is disabled");
+    }
+
+    public function getGroupFolderLockingNone()
+    {
+        return " " . $this->l->t("Group folder cannot be locked");
     }
 }

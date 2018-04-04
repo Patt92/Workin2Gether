@@ -2,21 +2,25 @@
 
 namespace OCA\w2g2;
 
+use OCA\w2g2\Service\UserService;
+use OCA\w2g2\Db\GroupFolderMapper;
+use OCA\w2g2\Db\FileMapper;
+
 class File {
     protected $fileId;
-    protected $lock;
-    protected $groupFolderFileId;
 
-    public function __construct($fileId)
+    // @var OCA\w2g2\Db\Lock
+    protected $lock;
+
+    public function __construct($fileId, $mapper)
     {
         $this->fileId = $fileId;
 
-        $fileLocks = Database::getFileLock($this->fileId);
-
-        $this->lock = empty($fileLocks) ? null : $fileLocks[0];
-
-        $groupFolderFile = (Database::getGroupFolderFile())[0];
-        $this->groupFolderFileId = $groupFolderFile['fileid'];
+        try {
+            $this->lock = $mapper->find($this->fileId);
+        } catch (\Exception $e) {
+            $this->lock = null;
+        }
     }
 
     public function isLocked()
@@ -24,23 +28,28 @@ class File {
         return !! $this->lock;
     }
 
+    public function getId()
+    {
+        return $this->fileId;
+    }
+
     public function getLocker()
     {
-        return $this->lock['locked_by'];
+        if ( ! $this->lock) {
+            return null;
+        }
+
+        return $this->lock->getLockedBy();
     }
 
-    public function lock($lockedBy)
+    public function onLocked()
     {
-        Database::lockFile($this->fileId, $lockedBy);
-
-        Event::emit('lock', $this->fileId, User::getDisplayName($lockedBy));
+        Event::emit('lock', $this->fileId, UserService::getDisplayName());
     }
 
-    public function unlock()
+    public function onUnlocked()
     {
-        Database::unlockFile($this->fileId);
-
-        Event::emit('unlock', $this->fileId, User::getDisplayName($this->getLocker()));
+        Event::emit('unlock', $this->fileId, UserService::getDisplayName($this->getLocker()));
     }
 
     public function canBeUnlockedBy($user)
@@ -50,7 +59,13 @@ class File {
 
     public function isGroupFolder()
     {
-        return $this->getParentId() === $this->groupFolderFileId;
+        $groupFolderFileId = GroupFolderMapper::get();
+
+        if ( ! $groupFolderFileId) {
+            return false;
+        }
+
+        return $this->getParentId() === $groupFolderFileId;
     }
 
     public function getParentId()
@@ -60,12 +75,6 @@ class File {
 
     public function getCompleteData()
     {
-        $files = Database::getFile($this->fileId);
-
-        if (empty($files)) {
-            return null;
-        }
-
-        return $files[0];
+        return FileMapper::get($this->fileId);
     }
 }

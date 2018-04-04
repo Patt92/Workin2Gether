@@ -4,10 +4,11 @@
     var fontcolor = 'ffffff';
     var fileBeingActedUponId = '';
     var directoryLock = '';
-    var url = OC.filePath('w2g2', 'ajax', 'w2g2.php');
-    var updateDatabaseURL = OC.filePath('w2g2', 'ajax', 'updateDatabase.php');
-    var checkStateUrl = OC.filePath('w2g2', 'ajax', 'checkState.php');
-    var directoryLockUrl = OC.filePath('w2g2', 'ajax', 'directoryLock.php');
+    var url = OC.generateUrl('/apps/w2g2/lock');
+    var updateDatabaseURL = OC.generateUrl('/apps/w2g2/update-database');
+    var checkStateUrl = OC.generateUrl('/apps/w2g2/lock');
+    var directoryLockUrl = OC.generateUrl('/apps/w2g2/directory-lock');
+    var colorUrl = OC.generateUrl('/apps/w2g2/color');
     var lockstate = t('w2g2', 'Locked');
 
     $(document).ready(function () {
@@ -67,12 +68,13 @@
         });
     }
 
-    //Switch the Lockstate
+    // Switch the Lockstate
     function toggleState(fileName) {
         var fileNameEncoded = escapeHTML(fileName);
+
         $(".ignore-click").unbind("click");
 
-        //Walk through the Filelists
+        //Walk through the files list
         $('#fileList tr').each(function () {
             var $tr = $(this);
             var $_tr = $tr.html().replace(/^\s+|\s+$/g, '').replace('<span class="extension">', '').split('</span>').join('');
@@ -106,21 +108,11 @@
     function toggleLock(fileName, $file) {
         var id = $file.attr('data-id');
         var fileType = $file.attr('data-type');
-        var owner = $file.attr('data-share-owner');
-        var mountType = $file.attr('data-mounttype');
 
         // Block any 'lock' or 'unlock' actions on this file until the current one is finished.
         if (fileBeingActedUponId === id) {
             return;
         }
-
-        if (fileType === 'dir' && directoryLock === 'directory_locking_none') {
-            // alert('Directories locking is disabled.');
-            return;
-        }
-
-        oc_dir = $('#dir').val();
-        oc_path = oc_dir + '/' + fileName;
 
         // Set the current file as being acted upon to block any future action until the current one is finished.
         fileBeingActedUponId = id;
@@ -129,11 +121,8 @@
         showLoading(fileName);
 
         var data = {
-            path: escapeHTML(oc_path),
-            owner: owner ? owner : '',
             id: id,
-            mountType: mountType ? mountType : '',
-            fileType: fileType
+            fileType: fileType,
         };
 
         $.ajax({
@@ -165,7 +154,7 @@
 
         $.ajax({
             url: checkStateUrl,
-            type: "post",
+            type: "get",
             data: data,
             success: function (data) {
                 updateAllFilesUI(data);
@@ -174,8 +163,6 @@
     }
 
     function updateAllFilesUI(files) {
-        files = JSON.parse(files);
-
         for (var i = 0; i < files.length; i++) {
             var fileName = files[i][1];
             var message = files[i][3];
@@ -184,8 +171,6 @@
             // if (fileType === 'dir' && directoryLock === 'directory_locking_none') {
             //     return;
             // }
-
-
 
             updateFileUI(fileName, message);
         }
@@ -218,9 +203,9 @@
             .filterAttr('data-action', 'getstate_w2g')
             .html(html);
 
-        if ( ! message.includes(t('w2g2', 'No permission'))) {
+        // if ( ! message.includes(t('w2g2', 'No permission'))) {
             toggleState(fileName);
-        }
+        // }
     }
 
     /**
@@ -317,8 +302,8 @@
 
     function getBackgroundColor() {
         $.ajax({
-            url: OC.filePath('w2g2', 'ajax', 'getcolor.php'),
-            type: "post",
+            url: colorUrl,
+            type: "get",
             data: {type: 'color'},
             async: false,
             success: function (data) {
@@ -331,8 +316,8 @@
 
     function getFontColor() {
         $.ajax({
-            url: OC.filePath('w2g2', 'ajax', 'getcolor.php'),
-            type: "post",
+            url: colorUrl,
+            type: "get",
             data: {type: 'fontcolor'},
             async: false,
             success: function (data) {
@@ -346,7 +331,7 @@
     function getDirectoryLockStatus() {
         $.ajax({
             url: directoryLockUrl,
-            type: "post",
+            type: "get",
             data: {},
             async: false,
             success: function (data) {

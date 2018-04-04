@@ -10,6 +10,7 @@ use OCP\IURLGenerator;
 use OCP\IUser;
 use OCP\IUserManager;
 use OCP\L10N\IFactory;
+use OCA\w2g2\Service\UserService;
 
 class Provider implements IProvider {
 
@@ -57,7 +58,8 @@ class Provider implements IProvider {
      * @throws \InvalidArgumentException
      * @since 11.0.0
      */
-    public function parse($language, IEvent $event, IEvent $previousEvent = null) {
+    public function parse($language, IEvent $event, IEvent $previousEvent = null)
+    {
         if ($event->getApp() !== 'w2g2') {
             throw new \InvalidArgumentException();
         }
@@ -186,7 +188,7 @@ class Provider implements IProvider {
      */
     protected function generateUserParameter($uid) {
         if (!isset($this->displayNames[$uid])) {
-            $this->displayNames[$uid] = $this->getDisplayName($uid);
+            $this->displayNames[$uid] = UserService::getDisplayName($uid);
         }
 
         return [
@@ -194,18 +196,5 @@ class Provider implements IProvider {
             'id' => $uid,
             'name' => $this->displayNames[$uid],
         ];
-    }
-
-    /**
-     * @param string $uid
-     * @return string
-     */
-    protected function getDisplayName($uid) {
-        $user = $this->userManager->get($uid);
-        if ($user instanceof IUser) {
-            return $user->getDisplayName();
-        } else {
-            return $uid;
-        }
     }
 }
