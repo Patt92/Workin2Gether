@@ -2,16 +2,16 @@
 
 namespace OCA\w2g2\Migration;
 
-use OCP\IDbConnection;
-
 class UpdateDatabase {
     protected $tableName;
+    protected $TMPtableName;
     protected $db;
 
-    public function __construct(IDbConnection $dbConnection)
+    public function __construct()
     {
         $this->tableName = "oc_locks_w2g2";
-        $this->db = $dbConnection;
+        $this->TMPtableName = "oc_locks_w2g2_tmp";
+        $this->db = \OC::$server->getDatabaseConnection();
     }
 
     public function run()
@@ -76,17 +76,22 @@ class UpdateDatabase {
                     }
                 }
             }
-
-            $deleteQuery = "DELETE FROM " . $this->tableName;
-
-            $this->db->executeQuery($deleteQuery);
         }
 
-        $renameQuery = "ALTER TABLE " . $this->tableName . " RENAME COLUMN name TO file_id";
-        $typeQuery = "ALTER TABLE " . $this->tableName . " ALTER COLUMN file_id TYPE INT USING file_id::integer";
+        $createTMPQuery = "
+            CREATE TABLE IF NOT EXISTS " . $this->TMPtableName . " (
+                `file_id` INT(11) NOT NULL,
+                `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                `locked_by` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8_bin',
+                PRIMARY KEY (`file_id`)
+            )
+        ";
 
-        $this->db->executeQuery($renameQuery);
-        $this->db->executeQuery($typeQuery);
+        $this->db->executeQuery($createTMPQuery);
+
+        // Just in case an upgrade failed previously.
+        $truncateQuery = "TRUNCATE " . $this->TMPtableName;
+        $this->db->executeQuery($truncateQuery);
 
         // Add the data back in the table
         if (count($files) > 0) {
@@ -104,5 +109,12 @@ class UpdateDatabase {
 
             $this->db->executeQuery($insertQuery);
         }
+
+        $dropQuery = "DROP TABLE " . $this->tableName;
+
+        $renameQuery = "RENAME TABLE " . $this->TMPtableName . " TO " . $this->tableName . "";
+
+        $this->db->executeQuery($dropQuery);
+        $this->db->executeQuery($renameQuery);
     }
 }
