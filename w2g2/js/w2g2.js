@@ -12,7 +12,7 @@
     var lockstate = t('w2g2', 'Locked');
 
     $(document).ready(function () {
-        attemptUpdateDatabase();
+        // attemptUpdateDatabase();
 
         getBackgroundColor();
         getFontColor();
