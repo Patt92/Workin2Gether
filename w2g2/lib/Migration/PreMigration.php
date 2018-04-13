@@ -82,7 +82,7 @@ class PreMigration implements IRepairStep {
      */
     protected function insertDataInTempTable()
     {
-        $insertStatement = "INSERT INTO TABLE " . $this->tempTableName .
+        $insertStatement = "INSERT INTO " . $this->tempTableName .
             " SELECT * FROM " . $this->tableName;
 
         $this->db->executeQuery($insertStatement);
