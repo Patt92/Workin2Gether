@@ -55,20 +55,7 @@ class ConfigController extends Controller {
     }
 
     /**
-     * @NoAdminRequired
-     * @NoCSRFRequired
-     *
-     * @return DataResponse
-     */
-    public function updateDatabase()
-    {
-        $updateDatabase = new UpdateDatabase();
-
-        return new DataResponse($updateDatabase->run());
-    }
-
-    /**
-     * @NoAdminRequired
+     * Update config option.
      *
      * @param $type
      * @param $value

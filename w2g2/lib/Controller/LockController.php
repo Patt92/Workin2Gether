@@ -26,6 +26,7 @@ class LockController extends Controller {
     }
 
     /**
+     * @NoAdminRequired
      * @NoCSRFRequired
      *
      * @param $files
@@ -53,6 +54,7 @@ class LockController extends Controller {
     }
 
     /**
+     * @NoAdminRequired
      *
      * @param $id
      * @param $fileType
@@ -64,6 +66,7 @@ class LockController extends Controller {
     }
 
     /**
+     * @NoAdminRequired
      *
      * @param $action
      * @param null $lockedFileId

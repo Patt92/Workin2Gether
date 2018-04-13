@@ -14,11 +14,6 @@ return [
             'verb' => 'GET'
         ],
         [
-            'name' => 'config#update_database',
-            'url' => '/update-database',
-            'verb' => 'POST'
-        ],
-        [
             'name' => 'config#update',
             'url' => '/update',
             'verb' => 'POST'
