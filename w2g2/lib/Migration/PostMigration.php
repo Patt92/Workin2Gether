@@ -108,37 +108,65 @@ class PostMigration implements IRepairStep {
 
         // Get all data in the table and store it temporarily to add it back later.
         if (count($locks) != 0) {
-            $fileCacheQuery = "SELECT fileid FROM oc_filecache WHERE path=?";
-
             foreach ($locks as $lock) {
-                $groupFolderIndex = strpos($lock['name'], '__groupfolders');
-                $fileIndex = strpos($lock['name'], 'files/');
-                $index = $groupFolderIndex ?: $fileIndex;
-
-                if ($index) {
-                    $fileName = substr($lock['name'], $index);
-
-                    $result = $this->db->executeQuery($fileCacheQuery, [$fileName])
-                        ->fetchAll();
-
-                    // Check if the file with the given path exits.
-                    if (
-                        $result &&
-                        is_array($result) &&
-                        count($result) > 0 &&
-                        array_key_exists('fileid', $result[0]) &&
-                        $result[0]['fileid']
-                    ) {
-                        $files[] = [
-                            'id' => $result[0]['fileid'],
-                            'locked_by' => $lock['locked_by']
-                        ];
-                    }
-                }
+                $files[] = $this->getLock($lock);
             }
         }
 
         return $files;
+    }
+
+    protected function getLock($lock)
+    {
+        $fileCacheQuery = "SELECT fileid FROM *PREFIX*filecache WHERE path=?";
+
+        $groupFolderIndex = strpos($lock['name'], '__groupfolders');
+
+        if ($groupFolderIndex) {
+            $fileName = substr($lock['name'], $groupFolderIndex);
+
+            $result = $this->db->executeQuery($fileCacheQuery, [$fileName])
+                ->fetchAll();
+        } else {
+            // Ordinary file
+            $firstSlashIndex = strpos($lock['name'], '/') ;
+            $storageOwner = substr($lock['name'], 0, $firstSlashIndex);
+            $storageId = "home::" . $storageOwner;
+
+            $storageQuery = "SELECT * FROM *PREFIX*storages WHERE id=?";
+
+            $result = $this->db->executeQuery($storageQuery, [$storageId])
+                ->fetchAll();
+
+            $storageNumericId = $result && count($result) > 0 ? $result[0]['numeric_id'] : null;
+
+            $filePath = substr($lock['name'], $firstSlashIndex + 1);
+
+            $fileQuery = "SELECT file.fileid
+                        FROM *PREFIX*filecache file 
+                        INNER JOIN *PREFIX*storages storage 
+                        ON file.storage = storage.numeric_id 
+                        WHERE file.path = ? 
+                        AND storage.numeric_id = ?
+                        LIMIT 1";
+
+            $result = $this->db->executeQuery($fileQuery, [$filePath, $storageNumericId])
+                ->fetchAll();
+        }
+
+        // Check if the file with the given path exits.
+        if (
+            $result &&
+            is_array($result) &&
+            count($result) > 0 &&
+            array_key_exists('fileid', $result[0]) &&
+            $result[0]['fileid']
+        ) {
+            return [
+                'id' => $result[0]['fileid'],
+                'locked_by' => $lock['locked_by']
+            ];
+        }
     }
 
     /**
