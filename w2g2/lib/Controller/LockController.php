@@ -27,7 +27,6 @@ class LockController extends Controller {
 
     /**
      * @NoAdminRequired
-     * @NoCSRFRequired
      *
      * @param $files
      * @param $folder
